@@ -1,0 +1,231 @@
+[
+  {
+    "id": "abraham-wanderung",
+    "title": "Abrahams Wanderung",
+    "personIds": ["abraham", "sara", "lot", "terach"],
+    "yearStart": -2010,
+    "yearEnd": -1960,
+    "colorToken": "pentateuch",
+    "routeCertainty": "niedrig",
+    "description": "Von Ur am unteren Euphrat über Haran nach Kanaan und weiter bis Ägypten. Der Weg folgt dem Fruchtbaren Halbmond — die direkte Route durch die syrische Wüste war für Herden unpassierbar.",
+    "legs": [
+      { "placeId": "ur", "order": 1, "eventId": "terach-auszug-ur", "note": "Aufbruch der Sippe Terachs" },
+      { "placeId": "haran", "order": 2, "eventId": "abraham-berufung", "note": "Terach stirbt; Abram empfängt den Ruf" },
+      { "placeId": "damaskus", "order": 3, "note": "Durchzug durch Aram" },
+      { "placeId": "sichem", "order": 4, "eventId": "abraham-kanaan", "note": "Erster Altar in Kanaan" },
+      { "placeId": "bethel", "order": 5, "eventId": "abraham-lot-trennung", "note": "Trennung von Lot" },
+      { "placeId": "goschen", "order": 6, "eventId": "abraham-aegypten", "note": "Ausweichen vor der Hungersnot" },
+      { "placeId": "hebron", "order": 7, "eventId": "abraham-bund", "note": "Wohnsitz bei den Eichen von Mamre" },
+      { "placeId": "beerscheba", "order": 8, "eventId": "isaak-geburt", "note": "Brunnen und Vertrag mit Abimelech" }
+    ]
+  },
+  {
+    "id": "exodus-route",
+    "title": "Der Exodus",
+    "personIds": ["mose", "aaron", "mirjam"],
+    "yearStart": -1446,
+    "yearEnd": -1406,
+    "colorToken": "pentateuch",
+    "routeCertainty": "niedrig",
+    "description": "Vom Ostdelta bis an den Rand des verheißenen Landes. Fast keine Station lässt sich sicher lokalisieren — die Linie ist eine plausible Rekonstruktion, keine belegte Route.",
+    "legs": [
+      { "placeId": "ramses", "order": 1, "eventId": "passa-auszug", "note": "Aufbruch in der Passanacht" },
+      { "placeId": "schilfmeer", "order": 2, "eventId": "schilfmeer", "note": "Durchzug durchs Meer" },
+      { "placeId": "mara", "order": 3, "eventId": "mara-elim", "note": "Bitteres Wasser wird süß" },
+      { "placeId": "elim", "order": 4, "note": "Zwölf Quellen, siebzig Palmen" },
+      { "placeId": "rafidim", "order": 5, "eventId": "rafidim-wasser", "note": "Wasser aus dem Felsen, Kampf gegen Amalek" },
+      { "placeId": "sinai", "order": 6, "eventId": "sinai-bund", "note": "Bundesschluss und Gesetzgebung" },
+      { "placeId": "wueste-paran", "order": 7, "note": "Durchzug nach Norden" },
+      { "placeId": "kadesch-barnea", "order": 8, "eventId": "kundschafter", "note": "Umkehr — 38 Jahre Aufenthalt" },
+      { "placeId": "wueste-zin", "order": 9, "eventId": "eherne-schlange", "note": "Umgehung Edoms" },
+      { "placeId": "heschbon", "order": 10, "eventId": "sihon-og", "note": "Sieg über die Amoriterkönige" },
+      { "placeId": "nebo", "order": 11, "eventId": "mose-tod", "note": "Blick ins Land, Tod des Mose" }
+    ]
+  },
+  {
+    "id": "josua-feldzug",
+    "title": "Josuas Feldzüge",
+    "personIds": ["josua", "kaleb"],
+    "yearStart": -1406,
+    "yearEnd": -1400,
+    "colorToken": "geschichtsbuecher",
+    "routeCertainty": "mittel",
+    "description": "Der Einzug über den Jordan, die Spaltung des Landes in der Mitte und danach zwei Feldzüge nach Süden und Norden.",
+    "legs": [
+      { "placeId": "jordan", "order": 1, "eventId": "jordan-durchzug", "note": "Durchzug bei Gilgal" },
+      { "placeId": "jericho", "order": 2, "eventId": "jericho-fall", "note": "Erste Eroberung" },
+      { "placeId": "ai", "order": 3, "eventId": "ai-eroberung", "note": "Aufstieg ins Bergland" },
+      { "placeId": "gibeon", "order": 4, "eventId": "gibeon-list", "note": "Bund mit den Gibeonitern" },
+      { "placeId": "ajalon", "order": 5, "eventId": "sonne-gibeon", "note": "Südfeldzug" },
+      { "placeId": "lachisch", "order": 6, "note": "Eroberung der Schefela" },
+      { "placeId": "hazor", "order": 7, "eventId": "hazor-eroberung", "note": "Nordfeldzug" },
+      { "placeId": "silo", "order": 8, "eventId": "landverteilung", "note": "Verteilung des Landes" }
+    ]
+  },
+  {
+    "id": "exil-babylon",
+    "title": "Die Deportation nach Babylon",
+    "personIds": ["zedekia", "nebukadnezar", "hesekiel", "daniel"],
+    "yearStart": -605,
+    "yearEnd": -586,
+    "colorToken": "propheten",
+    "routeCertainty": "mittel",
+    "description": "In drei Wellen wird die Oberschicht Judas nach Babylonien verschleppt. Der Weg führt nicht durch die Wüste, sondern nordwärts am Euphrat entlang.",
+    "legs": [
+      { "placeId": "jerusalem", "order": 1, "note": "Belagerung und Fall der Stadt" },
+      { "placeId": "riblah", "order": 2, "note": "Feldlager Nebukadnezars — Zedekia wird abgeurteilt" },
+      { "placeId": "karkemisch", "order": 3, "note": "Euphratübergang" },
+      { "placeId": "babylon", "order": 4, "note": "Ziel der Deportation" }
+    ]
+  },
+  {
+    "id": "rueckkehr-babylon",
+    "title": "Rückkehr aus dem Exil",
+    "personIds": ["serubbabel", "jeschua", "esra", "nehemia"],
+    "yearStart": -538,
+    "yearEnd": -445,
+    "colorToken": "geschichtsbuecher",
+    "routeCertainty": "mittel",
+    "description": "Nach dem Edikt des Kyros kehren mehrere Gruppen zurück — zuerst unter Serubbabel, später unter Esra und Nehemia.",
+    "legs": [
+      { "placeId": "babylon", "order": 1, "note": "Edikt des Kyros" },
+      { "placeId": "susa", "order": 2, "note": "Nehemia bricht vom Königshof auf" },
+      { "placeId": "damaskus", "order": 3, "note": "Weg durch Syrien" },
+      { "placeId": "jerusalem", "order": 4, "note": "Wiederaufbau von Altar, Tempel und Mauer" }
+    ]
+  },
+  {
+    "id": "flucht-aegypten",
+    "title": "Die Flucht nach Ägypten",
+    "personIds": ["josef-nt", "maria", "jesus"],
+    "yearStart": -4,
+    "yearEnd": -1,
+    "colorToken": "evangelien",
+    "routeCertainty": "niedrig",
+    "description": "Vor dem Kindermord des Herodes bringt Josef die Familie nach Ägypten und kehrt nach dessen Tod nicht nach Judäa, sondern nach Galiläa zurück.",
+    "legs": [
+      { "placeId": "bethlehem", "order": 1, "note": "Aufbruch bei Nacht" },
+      { "placeId": "gaza", "order": 2, "note": "Küstenstraße nach Süden" },
+      { "placeId": "goschen", "order": 3, "note": "Aufenthalt in Ägypten" },
+      { "placeId": "nazareth", "order": 4, "note": "Rückkehr nach Galiläa" }
+    ]
+  },
+  {
+    "id": "jesus-galilaea",
+    "title": "Jesu Wirken in Galiläa",
+    "personIds": ["jesus", "petrus", "johannes"],
+    "yearStart": 27,
+    "yearEnd": 30,
+    "colorToken": "evangelien",
+    "routeCertainty": "mittel",
+    "description": "Der Radius des öffentlichen Wirkens: ein Umkreis von kaum fünfzig Kilometern um den See Genezareth, mit Abstechern nach Norden und in die Dekapolis.",
+    "legs": [
+      { "placeId": "nazareth", "order": 1, "note": "Ablehnung in der Heimatstadt" },
+      { "placeId": "kana", "order": 2, "note": "Das erste Zeichen" },
+      { "placeId": "kapernaum", "order": 3, "note": "Neuer Wohnort und Zentrum des Wirkens" },
+      { "placeId": "betsaida", "order": 4, "note": "Speisung der Fünftausend" },
+      { "placeId": "gadara", "order": 5, "note": "Überfahrt in die Dekapolis" },
+      { "placeId": "tyrus", "order": 6, "note": "Rückzug ins phönizische Grenzland" },
+      { "placeId": "caesarea-philippi", "order": 7, "note": "Das Bekenntnis des Petrus" },
+      { "placeId": "hermon", "order": 8, "note": "Die Verklärung auf einem hohen Berg" },
+      { "placeId": "jericho", "order": 9, "note": "Letzter Aufstieg nach Jerusalem" },
+      { "placeId": "jerusalem", "order": 10, "note": "Einzug, Passion und Auferstehung" }
+    ]
+  },
+  {
+    "id": "paulus-1",
+    "title": "Erste Missionsreise des Paulus",
+    "personIds": ["paulus", "barnabas", "markus"],
+    "yearStart": 46,
+    "yearEnd": 48,
+    "colorToken": "apostelgeschichte",
+    "routeCertainty": "hoch",
+    "description": "Von Antiochia über Zypern ins südgalatische Bergland und auf demselben Weg zurück — bewusst, um die jungen Gemeinden ein zweites Mal zu besuchen.",
+    "legs": [
+      { "placeId": "antiochia-syrien", "order": 1, "note": "Aussendung durch die Gemeinde" },
+      { "placeId": "seleukia", "order": 2, "note": "Einschiffung" },
+      { "placeId": "salamis", "order": 3, "note": "Predigt in den Synagogen Zyperns" },
+      { "placeId": "paphos", "order": 4, "note": "Bekehrung des Prokonsuls Sergius Paulus" },
+      { "placeId": "perge", "order": 5, "note": "Johannes Markus kehrt um" },
+      { "placeId": "antiochia-pisidien", "order": 6, "note": "Große Synagogenpredigt, dann Vertreibung" },
+      { "placeId": "ikonium", "order": 7, "note": "Spaltung der Stadt" },
+      { "placeId": "lystra", "order": 8, "note": "Für Götter gehalten, dann gesteinigt" },
+      { "placeId": "derbe", "order": 9, "note": "Umkehrpunkt der Reise" },
+      { "placeId": "attalia", "order": 10, "note": "Rückfahrt über den Hafen Pamphyliens" },
+      { "placeId": "antiochia-syrien", "order": 11, "note": "Bericht an die Gemeinde" }
+    ]
+  },
+  {
+    "id": "paulus-2",
+    "title": "Zweite Missionsreise des Paulus",
+    "personIds": ["paulus", "silas", "timotheus", "lukas"],
+    "yearStart": 49,
+    "yearEnd": 52,
+    "colorToken": "apostelgeschichte",
+    "routeCertainty": "hoch",
+    "description": "Der Sprung nach Europa. Nach der Vision des Mazedoniers in Troas entstehen die Gemeinden in Philippi, Thessalonich und Korinth — dort bleibt Paulus anderthalb Jahre.",
+    "legs": [
+      { "placeId": "antiochia-syrien", "order": 1, "note": "Aufbruch nach dem Streit über Markus" },
+      { "placeId": "derbe", "order": 2, "note": "Besuch der Gemeinden Galatiens" },
+      { "placeId": "lystra", "order": 3, "note": "Timotheus schließt sich an" },
+      { "placeId": "troas", "order": 4, "note": "Vision des Mazedoniers" },
+      { "placeId": "neapolis", "order": 5, "note": "Erster Schritt auf europäischen Boden" },
+      { "placeId": "philippi", "order": 6, "note": "Lydia, der Kerker und das Erdbeben" },
+      { "placeId": "thessalonich", "order": 7, "note": "Drei Sabbate in der Synagoge" },
+      { "placeId": "beroea", "order": 8, "note": "Tägliches Prüfen der Schriften" },
+      { "placeId": "athen", "order": 9, "note": "Rede auf dem Areopag" },
+      { "placeId": "korinth", "order": 10, "note": "Anderthalb Jahre bei Aquila und Priszilla" },
+      { "placeId": "kenchreae", "order": 11, "note": "Abfahrt vom Osthafen" },
+      { "placeId": "ephesus", "order": 12, "note": "Kurzer erster Besuch" },
+      { "placeId": "caesarea", "order": 13, "note": "Landung in Palästina" },
+      { "placeId": "antiochia-syrien", "order": 14, "note": "Rückkehr zur Heimatgemeinde" }
+    ]
+  },
+  {
+    "id": "paulus-3",
+    "title": "Dritte Missionsreise des Paulus",
+    "personIds": ["paulus", "timotheus", "lukas"],
+    "yearStart": 53,
+    "yearEnd": 57,
+    "colorToken": "apostelgeschichte",
+    "routeCertainty": "hoch",
+    "description": "Über zwei Jahre in Ephesus als Zentrum, von dem aus ganz Asia erreicht wird. Die Rückreise dient dem Sammeln der Kollekte für Jerusalem.",
+    "legs": [
+      { "placeId": "antiochia-syrien", "order": 1, "note": "Aufbruch" },
+      { "placeId": "ikonium", "order": 2, "note": "Stärkung der galatischen Gemeinden" },
+      { "placeId": "ephesus", "order": 3, "note": "Über zwei Jahre Lehre, dann der Aufruhr der Silberschmiede" },
+      { "placeId": "philippi", "order": 4, "note": "Reise durch Mazedonien" },
+      { "placeId": "korinth", "order": 5, "note": "Drei Monate in Griechenland, Abfassung des Römerbriefs" },
+      { "placeId": "troas", "order": 6, "note": "Eutychus fällt aus dem Fenster" },
+      { "placeId": "assos", "order": 7, "note": "Paulus geht zu Fuß" },
+      { "placeId": "milet", "order": 8, "note": "Abschiedsrede an die Ältesten von Ephesus" },
+      { "placeId": "patara", "order": 9, "note": "Umstieg auf ein Schiff nach Phönizien" },
+      { "placeId": "tyrus", "order": 10, "note": "Warnung der Jünger" },
+      { "placeId": "ptolemais", "order": 11, "note": "Letzte Station an der Küste" },
+      { "placeId": "caesarea", "order": 12, "note": "Prophezeiung des Agabus" },
+      { "placeId": "jerusalem", "order": 13, "note": "Übergabe der Kollekte, dann Verhaftung" }
+    ]
+  },
+  {
+    "id": "paulus-rom",
+    "title": "Die Romfahrt des Paulus",
+    "personIds": ["paulus", "lukas"],
+    "yearStart": 59,
+    "yearEnd": 60,
+    "colorToken": "apostelgeschichte",
+    "routeCertainty": "hoch",
+    "description": "Als Gefangener nach Rom — mit Schiffbruch vor Malta. Die Apostelgeschichte schildert die Fahrt so genau, dass sie eine der besten antiken Quellen zur Seefahrt ist.",
+    "legs": [
+      { "placeId": "caesarea", "order": 1, "note": "Abfahrt nach der Berufung auf den Kaiser" },
+      { "placeId": "sidon", "order": 2, "note": "Erster Hafen" },
+      { "placeId": "myra", "order": 3, "note": "Umstieg auf ein alexandrinisches Kornschiff" },
+      { "placeId": "knidos", "order": 4, "note": "Gegenwind zwingt zum Abdrehen" },
+      { "placeId": "guthafen", "order": 5, "note": "Paulus warnt vergeblich vor der Weiterfahrt" },
+      { "placeId": "malta", "order": 6, "note": "Schiffbruch und drei Monate auf der Insel" },
+      { "placeId": "syrakus", "order": 7, "note": "Drei Tage Aufenthalt" },
+      { "placeId": "rhegium", "order": 8, "note": "Durch die Straße von Messina" },
+      { "placeId": "puteoli", "order": 9, "note": "Landung in Italien" },
+      { "placeId": "rom", "order": 10, "note": "Zwei Jahre Hausarrest mit ungehinderter Verkündigung" }
+    ]
+  }
+]

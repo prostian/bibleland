@@ -1,0 +1,31 @@
+import { useSyncExternalStore } from 'react';
+
+/**
+ * Abonniert eine Media Query.
+ *
+ * `useSyncExternalStore` statt `useState` + `useEffect`: So steht der Wert
+ * schon beim ersten Render richtig da, statt erst nach einem Nachrenderer —
+ * das verhindert, dass das Mobil-Layout kurz aufblitzt.
+ */
+export function useMediaQuery(query: string): boolean {
+  return useSyncExternalStore(
+    (onChange) => {
+      if (typeof window === 'undefined') return () => {};
+      const media = window.matchMedia(query);
+      media.addEventListener('change', onChange);
+      return () => media.removeEventListener('change', onChange);
+    },
+    () => (typeof window === 'undefined' ? false : window.matchMedia(query).matches),
+    () => false,
+  );
+}
+
+/** Bildschirmbreiten, an denen das Layout umschaltet. Deckungsgleich mit Tailwind. */
+export const useIsMobile = () => useMediaQuery('(max-width: 767px)');
+export const useIsTablet = () => useMediaQuery('(max-width: 1023px)');
+
+/**
+ * Hat der Nutzer Bewegung abbestellt? Steuert `flyTo` gegen `setView`, die
+ * Panel-Übergänge und die Graph-Simulation.
+ */
+export const usePrefersReducedMotion = () => useMediaQuery('(prefers-reduced-motion: reduce)');

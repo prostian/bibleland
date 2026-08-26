@@ -1,0 +1,534 @@
+@import 'tailwindcss';
+@import 'leaflet/dist/leaflet.css';
+@import 'leaflet.markercluster/dist/MarkerCluster.css';
+
+/* Dark Mode über eine Klasse auf <html>, nicht nur über die Media Query —
+   damit der Nutzer bewusst umschalten kann. Das Skript in index.html setzt
+   die Klasse vor dem ersten Paint. */
+@custom-variant dark (&:where(.dark, .dark *));
+
+/* ==========================================================================
+   Semantische Tokens
+   Diese CSS-Variablen sind die einzige Wahrheitsquelle für Farbe. Sie werden
+   an drei Stellen gelesen: von Tailwind-Utilities (via @theme inline unten),
+   von den inline erzeugten Leaflet-SVG-Markern und vom Graph-Canvas
+   (getComputedStyle). Ein Ort für Farbe, drei Sichten, ein System.
+   ========================================================================== */
+
+:root {
+  color-scheme: light;
+
+  /* Flächen — leicht warmes Neutral statt reinem Grau (Notion-Anmutung) */
+  --bl-bg: #fbfbfa;
+  --bl-surface: #ffffff;
+  --bl-surface-2: #f4f4f2;
+  --bl-surface-3: #ebebe7;
+  --bl-overlay: rgb(255 255 255 / 0.82);
+
+  /* Ränder — subtil, damit Kanten nicht schreien */
+  --bl-border: #e7e6e2;
+  --bl-border-strong: #d4d3cd;
+
+  /* Text */
+  --bl-text: #1f1e1c;
+  --bl-text-muted: #6b6a65;
+  --bl-text-subtle: #94928c;
+
+  /* Akzent */
+  --bl-accent: #4f46e5;
+  --bl-accent-hover: #4338ca;
+  --bl-accent-soft: #eef2ff;
+  --bl-accent-contrast: #ffffff;
+
+  /* Ring/Fokus */
+  --bl-ring: #6366f1;
+
+  /* Bibelabschnitte — acht Farben, auf hellem und dunklem Grund geprüft.
+     Reihenfolge folgt dem Kanon. */
+  --bl-pentateuch: #a16207;
+  --bl-geschichtsbuecher: #c2410c;
+  --bl-weisheit: #4d7c0f;
+  --bl-propheten: #7e22ce;
+  --bl-evangelien: #047857;
+  --bl-apostelgeschichte: #0e7490;
+  --bl-briefe: #1d4ed8;
+  --bl-offenbarung: #be123c;
+
+  /* Außerbiblische Ereignisse gehören zu keinem Bibelabschnitt und bekommen
+     daher keine Abschnittsfarbe, sondern ein zurückhaltendes Grau. */
+  --bl-ausserbiblisch: #78716c;
+
+  /* Knotentypen im Wissensnetz */
+  --bl-node-ereignis: #4f46e5;
+  --bl-node-person: #c2410c;
+  --bl-node-ort: #047857;
+  --bl-node-buch: #6b6a65;
+  --bl-node-reise: #a21caf;
+
+  /* Karte */
+  --bl-map-graticule: rgb(0 0 0 / 0.06);
+  --bl-tile-filter: none;
+
+  --bl-shadow-panel: 0 1px 2px rgb(0 0 0 / 0.04), 0 8px 24px -8px rgb(0 0 0 / 0.12);
+  --bl-shadow-pop: 0 2px 4px rgb(0 0 0 / 0.06), 0 12px 32px -8px rgb(0 0 0 / 0.18);
+}
+
+.dark {
+  color-scheme: dark;
+
+  --bl-bg: #131312;
+  --bl-surface: #1b1b1a;
+  --bl-surface-2: #232322;
+  --bl-surface-3: #2c2c2a;
+  --bl-overlay: rgb(27 27 26 / 0.84);
+
+  --bl-border: #2e2e2b;
+  --bl-border-strong: #3f3f3b;
+
+  --bl-text: #f0efec;
+  --bl-text-muted: #a3a19a;
+  --bl-text-subtle: #75736d;
+
+  --bl-accent: #818cf8;
+  --bl-accent-hover: #a5b4fc;
+  --bl-accent-soft: #1e1b3a;
+  --bl-accent-contrast: #14131f;
+
+  --bl-ring: #818cf8;
+
+  /* Auf dunklem Grund brauchen dieselben Hues deutlich mehr Helligkeit,
+     sonst verschwinden die Marker im Hintergrund. */
+  --bl-pentateuch: #eab308;
+  --bl-geschichtsbuecher: #fb923c;
+  --bl-weisheit: #a3e635;
+  --bl-propheten: #c084fc;
+  --bl-evangelien: #34d399;
+  --bl-apostelgeschichte: #22d3ee;
+  --bl-briefe: #60a5fa;
+  --bl-offenbarung: #fb7185;
+
+  --bl-ausserbiblisch: #a8a29e;
+
+  --bl-node-ereignis: #818cf8;
+  --bl-node-person: #fb923c;
+  --bl-node-ort: #34d399;
+  --bl-node-buch: #a3a19a;
+  --bl-node-reise: #e879f9;
+
+  --bl-map-graticule: rgb(255 255 255 / 0.07);
+  /* OSM-Kacheln sind hell. Ohne Filter blendet die Karte im Dark Mode. */
+  --bl-tile-filter: invert(1) hue-rotate(180deg) brightness(0.92) contrast(0.88) saturate(0.7);
+
+  --bl-shadow-panel: 0 1px 2px rgb(0 0 0 / 0.3), 0 8px 24px -8px rgb(0 0 0 / 0.6);
+  --bl-shadow-pop: 0 2px 4px rgb(0 0 0 / 0.4), 0 12px 32px -8px rgb(0 0 0 / 0.7);
+}
+
+/* `inline` sorgt dafür, dass Utilities direkt var(--bl-*) ausgeben statt eine
+   zweite Indirektion. Nur so wirkt der Theme-Wechsel ohne Rebuild. */
+@theme inline {
+  --color-bg: var(--bl-bg);
+  --color-surface: var(--bl-surface);
+  --color-surface-2: var(--bl-surface-2);
+  --color-surface-3: var(--bl-surface-3);
+  --color-overlay: var(--bl-overlay);
+
+  --color-line: var(--bl-border);
+  --color-line-strong: var(--bl-border-strong);
+
+  --color-ink: var(--bl-text);
+  --color-ink-muted: var(--bl-text-muted);
+  --color-ink-subtle: var(--bl-text-subtle);
+
+  --color-accent: var(--bl-accent);
+  --color-accent-hover: var(--bl-accent-hover);
+  --color-accent-soft: var(--bl-accent-soft);
+  --color-accent-contrast: var(--bl-accent-contrast);
+
+  --color-pentateuch: var(--bl-pentateuch);
+  --color-geschichtsbuecher: var(--bl-geschichtsbuecher);
+  --color-weisheit: var(--bl-weisheit);
+  --color-propheten: var(--bl-propheten);
+  --color-evangelien: var(--bl-evangelien);
+  --color-apostelgeschichte: var(--bl-apostelgeschichte);
+  --color-briefe: var(--bl-briefe);
+  --color-offenbarung: var(--bl-offenbarung);
+
+  --color-node-ereignis: var(--bl-node-ereignis);
+  --color-node-person: var(--bl-node-person);
+  --color-node-ort: var(--bl-node-ort);
+  --color-node-buch: var(--bl-node-buch);
+  --color-node-reise: var(--bl-node-reise);
+
+  --shadow-panel: var(--bl-shadow-panel);
+  --shadow-pop: var(--bl-shadow-pop);
+
+  --font-sans:
+    'Inter var', 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI Variable Text', 'Segoe UI',
+    system-ui, sans-serif;
+  --font-serif: 'Iowan Old Style', 'Palatino Linotype', 'Source Serif 4', Georgia, serif;
+  --font-greek: 'Gentium Plus', 'Cardo', 'Galatia SIL', 'Times New Roman', serif;
+  --font-hebrew: 'SBL Hebrew', 'Ezra SIL', 'Taamey Frank CLM', 'David', serif;
+
+  --radius-card: 0.75rem;
+}
+
+/* ==========================================================================
+   Basis
+   ========================================================================== */
+
+@layer base {
+  * {
+    border-color: var(--bl-border);
+  }
+
+  html {
+    -webkit-text-size-adjust: 100%;
+    text-size-adjust: 100%;
+  }
+
+  body {
+    background-color: var(--bl-bg);
+    color: var(--bl-text);
+    font-family: var(--font-sans);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    /* Überschneidungsfreie Ziffern — wichtig, weil überall Jahreszahlen
+       untereinander stehen. */
+    font-variant-numeric: tabular-nums;
+    overscroll-behavior: none;
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--bl-ring);
+    outline-offset: 2px;
+    border-radius: 3px;
+  }
+
+  /* Kein Fokusring bei reinen Mausklicks, aber immer bei Tastatur. */
+  :focus:not(:focus-visible) {
+    outline: none;
+  }
+
+  ::selection {
+    background-color: var(--bl-accent);
+    color: var(--bl-accent-contrast);
+  }
+
+  h1,
+  h2,
+  h3,
+  h4 {
+    letter-spacing: -0.011em;
+    text-wrap: balance;
+  }
+
+  p {
+    text-wrap: pretty;
+  }
+}
+
+/* ==========================================================================
+   Komponentennahe Hilfsklassen
+   ========================================================================== */
+
+@utility scrollbar-slim {
+  scrollbar-width: thin;
+  scrollbar-color: var(--bl-border-strong) transparent;
+
+  &::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+  }
+  &::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  &::-webkit-scrollbar-thumb {
+    background-color: var(--bl-border-strong);
+    border-radius: 999px;
+    border: 2px solid transparent;
+    background-clip: content-box;
+  }
+  &::-webkit-scrollbar-thumb:hover {
+    background-color: var(--bl-text-subtle);
+    background-clip: content-box;
+  }
+}
+
+/* Text mit griechischer bzw. hebräischer Schrift. Hebräisch braucht
+   zusätzlich die Leserichtung. */
+@utility text-greek {
+  font-family: var(--font-greek);
+  font-size: 1.0625em;
+  line-height: 1.85;
+}
+
+@utility text-hebrew {
+  font-family: var(--font-hebrew);
+  direction: rtl;
+  unicode-bidi: isolate;
+  font-size: 1.15em;
+  line-height: 2;
+}
+
+/* ==========================================================================
+   Leaflet-Anpassungen
+   Leaflet bringt eigene Styles mit, die wir an das Theme angleichen.
+   ========================================================================== */
+
+.leaflet-container {
+  background-color: var(--bl-surface-2);
+  font-family: var(--font-sans);
+  outline: none;
+}
+
+/* Kacheln im Dunkelmodus umdrehen — aber nur bei Kartenstilen, für die es
+   keinen eigenen dunklen Kachelsatz gibt. Der Filter sitzt auf dem
+   Tile-Pane, damit Marker und Linien darüber unberührt bleiben. */
+.bl-invert-tiles .leaflet-tile-pane {
+  filter: var(--bl-tile-filter);
+}
+
+.leaflet-control-attribution {
+  background-color: var(--bl-overlay) !important;
+  color: var(--bl-text-subtle) !important;
+  backdrop-filter: blur(8px);
+  font-size: 10px !important;
+  border-radius: 6px 0 0 0;
+}
+.leaflet-control-attribution a {
+  color: var(--bl-text-muted) !important;
+}
+
+.leaflet-bar {
+  border: 1px solid var(--bl-border) !important;
+  box-shadow: var(--bl-shadow-panel) !important;
+  border-radius: 10px !important;
+  overflow: hidden;
+}
+.leaflet-bar a {
+  background-color: var(--bl-surface) !important;
+  color: var(--bl-text) !important;
+  border-bottom-color: var(--bl-border) !important;
+}
+.leaflet-bar a:hover {
+  background-color: var(--bl-surface-2) !important;
+}
+
+.leaflet-popup-content-wrapper,
+.leaflet-popup-tip {
+  background-color: var(--bl-surface) !important;
+  color: var(--bl-text) !important;
+  box-shadow: var(--bl-shadow-pop) !important;
+  border-radius: 12px;
+}
+.leaflet-popup-content {
+  margin: 0;
+  font-family: var(--font-sans);
+}
+.leaflet-popup-close-button {
+  color: var(--bl-text-subtle) !important;
+}
+
+/* --------------------------------------------------------------------------
+   Auswahlliste für Orte mit mehreren Ereignissen
+
+   Das Markup entsteht in components/map/placePopup.ts als Zeichenkette, weil
+   die Marker imperativ erzeugt werden. Deshalb liegen die Stile hier und
+   nicht als Tailwind-Klassen an einer Komponente.
+   -------------------------------------------------------------------------- */
+
+.bl-pop-wrap .leaflet-popup-content {
+  margin: 0;
+  width: auto !important;
+}
+
+.bl-pop-head {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  padding: 9px 12px 7px;
+  border-bottom: 1px solid var(--bl-border);
+}
+
+.bl-pop-place {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--bl-text);
+}
+
+.bl-pop-count {
+  margin-left: auto;
+  font-size: 11px;
+  color: var(--bl-text-subtle);
+  font-variant-numeric: tabular-nums;
+}
+
+.bl-pop-list {
+  max-height: 244px;
+  overflow-y: auto;
+  padding: 4px;
+  scrollbar-width: thin;
+  scrollbar-color: var(--bl-border-strong) transparent;
+}
+
+.bl-pop-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  width: 100%;
+  padding: 5px 7px;
+  border: none;
+  border-radius: 8px;
+  background: transparent;
+  text-align: left;
+  cursor: pointer;
+  transition: background-color 120ms;
+}
+
+.bl-pop-row:hover {
+  background-color: var(--bl-surface-2);
+}
+
+.bl-pop-row.is-active {
+  background-color: var(--bl-accent-soft);
+}
+
+/* Der Pin in der Zeile ist eine verkleinerte Fassung des Kartenmarkers. */
+.bl-pop-pin {
+  flex-shrink: 0;
+  width: 18px;
+  margin-top: 1px;
+}
+.bl-pop-pin svg {
+  display: block;
+  width: 18px;
+  height: 24px;
+}
+
+.bl-pop-text {
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+  gap: 1px;
+}
+
+.bl-pop-title {
+  font-size: 12.5px;
+  line-height: 1.3;
+  color: var(--bl-text);
+}
+
+.bl-pop-meta {
+  font-size: 10.5px;
+  line-height: 1.3;
+  color: var(--bl-text-subtle);
+  font-variant-numeric: tabular-nums;
+}
+
+/* Eigene Marker: das div-Icon selbst ist nur Hülle, das SVG darin trägt die
+   Farbe. Kein Hintergrund, kein Rand. */
+.bl-marker,
+.bl-cluster {
+  background: transparent;
+  border: none;
+}
+
+.bl-marker svg {
+  display: block;
+  overflow: visible;
+  transition:
+    transform 140ms cubic-bezier(0.2, 0, 0.2, 1),
+    filter 140ms;
+  transform-origin: 50% 100%;
+}
+.bl-marker:hover svg,
+.bl-marker[data-hovered='true'] svg {
+  transform: scale(1.18);
+}
+.bl-marker[data-selected='true'] svg {
+  transform: scale(1.32);
+  filter: drop-shadow(0 3px 6px rgb(0 0 0 / 0.35));
+}
+
+/* Kleine Zahl am Pin: Wie viele Ereignisse spielen an diesem Ort? */
+.bl-marker-count {
+  position: absolute;
+  top: -3px;
+  right: -6px;
+  display: grid;
+  place-items: center;
+  min-width: 16px;
+  height: 16px;
+  padding: 0 4px;
+  border-radius: 999px;
+  background-color: var(--bl-surface);
+  color: var(--bl-text);
+  border: 1px solid var(--bl-border-strong);
+  font-size: 10px;
+  font-weight: 600;
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
+  pointer-events: none;
+}
+
+/* Der Pin braucht einen Bezugsrahmen, damit die Zahl an ihm klebt. */
+.bl-marker > span {
+  position: relative;
+  display: block;
+}
+
+/* Nummerierte Etappe einer Reise. */
+.bl-leg {
+  background: transparent;
+  border: none;
+}
+.bl-leg > span {
+  display: grid;
+  place-items: center;
+  width: 22px;
+  height: 22px;
+  border-radius: 999px;
+  background-color: var(--leg-color);
+  color: #fff;
+  border: 2px solid var(--bl-surface);
+  box-shadow: 0 1px 4px rgb(0 0 0 / 0.3);
+  font-size: 11px;
+  font-weight: 700;
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
+}
+
+.bl-cluster > div {
+  display: grid;
+  place-items: center;
+  width: 100%;
+  height: 100%;
+  border-radius: 999px;
+  font-weight: 600;
+  font-size: 12px;
+  font-variant-numeric: tabular-nums;
+  color: #fff;
+  border: 2px solid var(--bl-surface);
+  box-shadow: 0 2px 8px rgb(0 0 0 / 0.25);
+  transition: transform 140ms cubic-bezier(0.2, 0, 0.2, 1);
+}
+.bl-cluster:hover > div {
+  transform: scale(1.1);
+}
+
+/* ==========================================================================
+   Bewegung reduzieren
+   Die App lebt von Animation (flyTo, Panel-Slides, Graph-Simulation). Wer
+   Bewegung abbestellt hat, bekommt dieselben Zustände ohne Übergang.
+   ========================================================================== */
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
+}

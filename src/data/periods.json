@@ -1,0 +1,114 @@
+[
+  {
+    "id": "urgeschichte",
+    "name": "Urgeschichte",
+    "yearStart": -2200,
+    "yearEnd": -2020,
+    "colorToken": "pentateuch",
+    "description": "Genesis 1–11. Diese Erzählungen lassen sich nicht historisch datieren; die Platzierung auf dem Zeitstrahl ist rein symbolisch, damit sie überhaupt darstellbar sind."
+  },
+  {
+    "id": "patriarchen",
+    "name": "Patriarchenzeit",
+    "yearStart": -2020,
+    "yearEnd": -1640,
+    "colorToken": "pentateuch",
+    "description": "Abraham, Isaak, Jakob und Josef. Mittlere Bronzezeit — die Väter ziehen als Halbnomaden zwischen Mesopotamien, Kanaan und Ägypten."
+  },
+  {
+    "id": "aegypten",
+    "name": "Israel in Ägypten",
+    "yearStart": -1640,
+    "yearEnd": -1446,
+    "colorToken": "pentateuch",
+    "description": "Aus der Sippe Jakobs wird ein Volk, aus Gästen werden Fronarbeiter im Ostdelta."
+  },
+  {
+    "id": "exodus",
+    "name": "Exodus und Wüstenwanderung",
+    "yearStart": -1446,
+    "yearEnd": -1406,
+    "colorToken": "pentateuch",
+    "description": "Auszug aus Ägypten, Bundesschluss am Sinai und vierzig Jahre zwischen Ägypten und dem Ostjordanland."
+  },
+  {
+    "id": "landnahme",
+    "name": "Landnahme",
+    "yearStart": -1406,
+    "yearEnd": -1375,
+    "colorToken": "geschichtsbuecher",
+    "description": "Josuas Feldzüge und die Verteilung des Landes an die zwölf Stämme."
+  },
+  {
+    "id": "richterzeit",
+    "name": "Richterzeit",
+    "yearStart": -1375,
+    "yearEnd": -1050,
+    "colorToken": "geschichtsbuecher",
+    "description": "Rund drei Jahrhunderte ohne zentrale Führung — ein Kreislauf aus Abfall, Bedrängnis und Rettung."
+  },
+  {
+    "id": "vereinigtes-koenigreich",
+    "name": "Vereinigtes Königreich",
+    "yearStart": -1050,
+    "yearEnd": -931,
+    "colorToken": "geschichtsbuecher",
+    "description": "Saul, David und Salomo. Jerusalem wird Hauptstadt, der Tempel entsteht, das Reich erreicht seine größte Ausdehnung."
+  },
+  {
+    "id": "geteiltes-reich",
+    "name": "Geteiltes Reich",
+    "yearStart": -931,
+    "yearEnd": -586,
+    "colorToken": "propheten",
+    "description": "Israel im Norden, Juda im Süden. Die Zeit der großen Schriftpropheten, der assyrischen Eroberung Samarias und schließlich des Falls Jerusalems."
+  },
+  {
+    "id": "exil",
+    "name": "Babylonisches Exil",
+    "yearStart": -586,
+    "yearEnd": -538,
+    "colorToken": "propheten",
+    "description": "Fünf Jahrzehnte ohne Tempel und Land. Aus der Katastrophe wächst die Sammlung der Schriften."
+  },
+  {
+    "id": "perserzeit",
+    "name": "Rückkehr und Perserzeit",
+    "yearStart": -538,
+    "yearEnd": -332,
+    "colorToken": "geschichtsbuecher",
+    "description": "Kyros erlaubt die Heimkehr. Zweiter Tempel, Mauerbau unter Nehemia, Toraordnung unter Esra."
+  },
+  {
+    "id": "hellenismus",
+    "name": "Hellenistische Zeit",
+    "yearStart": -332,
+    "yearEnd": -63,
+    "colorToken": "weisheit",
+    "description": "Alexander, Ptolemäer, Seleukiden, der Makkabäeraufstand und das hasmonäische Königtum. Zwischen den Testamenten."
+  },
+  {
+    "id": "roemisch-herodianisch",
+    "name": "Römisch-herodianische Zeit",
+    "yearStart": -63,
+    "yearEnd": -6,
+    "colorToken": "weisheit",
+    "description": "Pompejus nimmt Jerusalem, Herodes der Große baut den Tempel neu aus. Judäa wird römisches Klientelgebiet."
+  },
+  {
+    "id": "jesus",
+    "name": "Leben Jesu",
+    "yearStart": -6,
+    "yearEnd": 30,
+    "colorToken": "evangelien",
+    "description": "Von der Geburt in Bethlehem bis zu Kreuzigung, Auferstehung und Himmelfahrt."
+  },
+  {
+    "id": "apostolisch",
+    "name": "Apostolische Zeit",
+    "yearStart": 30,
+    "yearEnd": 100,
+    "colorToken": "apostelgeschichte",
+    "description": "Pfingsten, die Missionsreisen des Paulus, der Jüdische Krieg und die Zerstörung des Tempels, zuletzt die Offenbarung auf Patmos."
+  }
+]

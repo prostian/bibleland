@@ -1,0 +1,34 @@
+node_modules/
+dist/
+dist-ssr/
+coverage/
+*.local
+
+# Editor / OS
+.vscode/*
+!.vscode/extensions.json
+.idea/
+.DS_Store
+Thumbs.db
+
+# Logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+*.log
+
+# ---------------------------------------------------------------------------
+# Lizenzierte Bibeltexte — NIEMALS committen.
+#
+# Schlachter 2000 (© Genfer Bibelgesellschaft) und die Einheitsuebersetzung
+# (© Katholische Bibelanstalt) sind urheberrechtlich geschuetzt. Eine lokale
+# Kopie fuer den privaten Gebrauch ist zulaessig, eine Weitergabe waere es
+# nicht. Diese Datei wird von `npm run fetch:verses` erzeugt und bleibt auf
+# diesem Rechner. Der committete Fallback ist verses.de.public.json
+# (Elberfelder 1905, gemeinfrei).
+# ---------------------------------------------------------------------------
+src/data/verses/verses.de.local.json
+
+# Zwischenablage des Vers-Skripts (heruntergeladene Volltext-Bibeln, ~7 MB)
+.cache/

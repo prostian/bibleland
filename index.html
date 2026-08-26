@@ -1,0 +1,33 @@
+<!doctype html>
+<html lang="de" class="h-full">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <meta name="color-scheme" content="light dark" />
+    <title>Bibleland — Bibel-Atlas, Zeitstrahl &amp; Wissensnetz</title>
+    <meta
+      name="description"
+      content="Die biblische Geschichte als interaktive Karte, Zeitstrahl und Wissensnetz. Ereignisse, Personen, Orte und Reisen chronologisch und geografisch erkunden."
+    />
+    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E%F0%9F%97%BA%EF%B8%8F%3C/text%3E%3C/svg%3E" />
+    <script>
+      // Theme vor dem ersten Paint setzen, damit es nicht kurz aufblitzt.
+      (function () {
+        try {
+          var gespeichert = localStorage.getItem('bibleland-theme');
+          var dunkel =
+            gespeichert === 'dark' ||
+            ((!gespeichert || gespeichert === 'system') &&
+              window.matchMedia('(prefers-color-scheme: dark)').matches);
+          document.documentElement.classList.toggle('dark', dunkel);
+        } catch (e) {
+          /* localStorage kann blockiert sein — dann eben Light Mode. */
+        }
+      })();
+    </script>
+  </head>
+  <body class="h-full">
+    <div id="root" class="h-full"></div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>

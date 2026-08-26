@@ -1,0 +1,53 @@
+{
+  "name": "bibleland",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "description": "Bibleland — Bibel-Atlas, Zeitstrahl und Knowledge Graph. Frontend-only, alle Daten lokal.",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview",
+    "typecheck": "tsc --noEmit",
+    "validate": "node scripts/validate-data.mjs",
+    "check": "npm run typecheck && npm run validate",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "fetch:verses": "node scripts/fetch-verses.mjs"
+  },
+  "dependencies": {
+    "clsx": "^2.1.1",
+    "d3-force": "^3.0.0",
+    "d3-quadtree": "^3.0.1",
+    "d3-selection": "^3.0.0",
+    "d3-zoom": "^3.0.0",
+    "fuse.js": "^7.5.0",
+    "leaflet": "^1.9.4",
+    "leaflet.markercluster": "^1.5.3",
+    "motion": "^13.1.0",
+    "react": "^19.2.0",
+    "react-dom": "^19.2.0",
+    "react-leaflet": "^5.0.0",
+    "react-router-dom": "^7.18.0",
+    "zustand": "^5.0.15"
+  },
+  "devDependencies": {
+    "@tailwindcss/vite": "^4.3.3",
+    "@testing-library/react": "^16.3.0",
+    "@types/d3-force": "^3.0.10",
+    "@types/d3-quadtree": "^3.0.6",
+    "@types/d3-selection": "^3.0.11",
+    "@types/d3-zoom": "^3.0.8",
+    "@types/leaflet": "^1.9.22",
+    "@types/leaflet.markercluster": "^1.5.6",
+    "@types/node": "^24.0.0",
+    "@types/react": "^19.2.0",
+    "@types/react-dom": "^19.2.0",
+    "@vitejs/plugin-react": "^6.0.5",
+    "jsdom": "^28.0.0",
+    "tailwindcss": "^4.3.3",
+    "typescript": "^5.9.0",
+    "vite": "^8.2.1",
+    "vitest": "^4.1.10"
+  }
+}
