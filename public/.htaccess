@@ -18,10 +18,29 @@
   RewriteRule ^ index.html [L]
 </IfModule>
 
-# Die gehashten Dateinamen in /assets aendern sich bei jedem Build, deshalb
-# duerfen sie lange zwischengespeichert werden. Die index.html dagegen nie —
-# sonst zeigt der Browser nach einem Deploy weiter die alte Fassung.
 <IfModule mod_headers.c>
+  # HTTPS erzwingen.
+  #
+  # Der Server leitet HTTP zwar mit 301 auf HTTPS um, aber der erste Aufruf
+  # geht dabei unverschluesselt hinaus — und Chrome zeigt in diesem Moment
+  # "Nicht sicher" in der Adresszeile. Wer einen Link ohne https:// weitergibt,
+  # loest genau das aus.
+  #
+  # Mit diesem Header merkt sich der Browser nach dem ersten Besuch, dass die
+  # Adresse nur ueber HTTPS erreichbar ist, und schaltet kuenftig schon vor dem
+  # Netzwerkzugriff um. Bewusst ohne includeSubDomains und ohne preload: Das
+  # gilt nur fuer diesen Host und laesst sich jederzeit zuruecknehmen.
+  Header always set Strict-Transport-Security "max-age=31536000"
+
+  # Keine geratenen Inhaltstypen, keine Einbettung in fremde Seiten,
+  # keine vollstaendige Adresse an fremde Server.
+  Header always set X-Content-Type-Options "nosniff"
+  Header always set X-Frame-Options "SAMEORIGIN"
+  Header always set Referrer-Policy "strict-origin-when-cross-origin"
+
+  # Die gehashten Dateinamen in /assets aendern sich bei jedem Build, deshalb
+  # duerfen sie lange zwischengespeichert werden. Die index.html dagegen nie —
+  # sonst zeigt der Browser nach einem Deploy weiter die alte Fassung.
   <FilesMatch "\.(js|css|woff2|png|svg|jpg|webp)$">
     Header set Cache-Control "public, max-age=31536000, immutable"
   </FilesMatch>
