@@ -1,0 +1,35 @@
+# Einzelseiten-Anwendung: Alle unbekannten Pfade an die index.html.
+#
+# Bibleland nutzt echte URLs (/ereignis/abraham-kanaan, /person/paulus,
+# /graph/person/paulus). Die gibt es als Dateien nicht — das Routing passiert
+# im Browser. Ohne diese Regel antwortet der Server bei jedem Neuladen und bei
+# jedem geteilten Link mit 404.
+
+<IfModule mod_rewrite.c>
+  RewriteEngine On
+  RewriteBase /
+
+  # Vorhandene Dateien und Verzeichnisse unveraendert ausliefern,
+  # sonst wuerden auch /assets/index-*.js und /favicon an die App gehen.
+  RewriteCond %{REQUEST_FILENAME} -f [OR]
+  RewriteCond %{REQUEST_FILENAME} -d
+  RewriteRule ^ - [L]
+
+  RewriteRule ^ index.html [L]
+</IfModule>
+
+# Die gehashten Dateinamen in /assets aendern sich bei jedem Build, deshalb
+# duerfen sie lange zwischengespeichert werden. Die index.html dagegen nie —
+# sonst zeigt der Browser nach einem Deploy weiter die alte Fassung.
+<IfModule mod_headers.c>
+  <FilesMatch "\.(js|css|woff2|png|svg|jpg|webp)$">
+    Header set Cache-Control "public, max-age=31536000, immutable"
+  </FilesMatch>
+  <FilesMatch "\.(html|json)$">
+    Header set Cache-Control "no-cache"
+  </FilesMatch>
+</IfModule>
+
+<IfModule mod_deflate.c>
+  AddOutputFilterByType DEFLATE text/html text/css application/javascript application/json image/svg+xml
+</IfModule>

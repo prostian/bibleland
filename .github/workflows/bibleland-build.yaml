@@ -1,5 +1,13 @@
 # To better understand this file read this:
 # https://docs.ionos.space/docs/github-actions-customization/
+#
+# Angepasst: Deploy Now legt diese Datei ohne Build-Schritt an und laedt das
+# Repository unveraendert hoch. Fuer ein Vite-Projekt geht das nicht — die
+# index.html verweist auf /src/main.tsx, und TypeScript kann ein statischer
+# Server nicht ausliefern. Der Browser blockiert das Modul dann mangels
+# MIME-Typ, und die Seite bleibt schwarz.
+#
+# Deshalb wird hier gebaut und nur noch ./dist hochgeladen.
 
 name: "Deploy Now: Execute Build"
 
@@ -14,7 +22,8 @@ on:
         type: string
 
 env:
-  DEPLOYMENT_FOLDER: ./
+  # Nicht das Repository, sondern das Bauergebnis ausliefern.
+  DEPLOYMENT_FOLDER: ./dist
 
 jobs:
 # Please do not rename this job
@@ -26,6 +35,25 @@ jobs:
         uses: actions/checkout@v4
         with:
           submodules: 'recursive'
+
+      - name: Node einrichten
+        uses: actions/setup-node@v4
+        with:
+          # Vite 8 verlangt Node ^20.19 oder >=22.12.
+          node-version: '22'
+          cache: 'npm'
+
+      - name: Abhaengigkeiten installieren
+        run: npm ci
+
+      - name: Datenbestand pruefen
+        # Bricht ab, wenn eine Ereignis-, Orts- oder Personenreferenz ins Leere
+        # zeigt. Lieber hier scheitern als eine Seite mit weissen Flecken
+        # ausliefern.
+        run: npm run validate
+
+      - name: Bauen
+        run: npm run build
 
 # Please do not touch the following action
       - name: Store deployment content
