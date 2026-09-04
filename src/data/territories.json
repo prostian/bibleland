@@ -1,0 +1,862 @@
+[
+  {
+    "id": "bronzezeit",
+    "name": "Großmächte der Bronzezeit",
+    "hint": "um 1450 v. Chr.",
+    "yearFrom": -2200,
+    "yearTo": -1401,
+    "note": "Kanaan liegt zwischen den Großreichen und gehört zum ägyptischen Machtbereich — Stadtstaaten unter Aufsicht, kein eigenes Reich.",
+    "territories": [
+      {
+        "id": "bz-aegypten",
+        "name": "Ägypten",
+        "kind": "reich",
+        "color": 0,
+        "label": [27.5, 31.5],
+        "note": "Neues Reich — Niltal, Delta und Sinai.",
+        "ring": [
+          [31.5, 29.9], [31.4, 32.2], [31.2, 33.6], [29.6, 34.7], [28.0, 34.3],
+          [29.4, 33.0], [29.9, 32.5], [27.5, 33.6], [25.5, 34.3], [23.9, 33.0],
+          [23.7, 32.5], [25.5, 32.2], [27.5, 30.8], [29.3, 30.4], [30.4, 30.0]
+        ]
+      },
+      {
+        "id": "bz-kanaan",
+        "name": "Kanaan",
+        "kind": "einfluss",
+        "color": 5,
+        "label": [32.2, 35.3],
+        "note": "Stadtstaaten unter ägyptischer Oberhoheit — Amarna-Zeit.",
+        "ring": [
+          [33.3, 35.2], [33.5, 36.0], [32.6, 36.2], [31.6, 35.9], [30.9, 35.4],
+          [31.0, 34.5], [31.9, 34.6], [32.9, 34.95]
+        ]
+      },
+      {
+        "id": "bz-hethiter",
+        "name": "Hethiterreich",
+        "kind": "reich",
+        "color": 2,
+        "label": [39.4, 33.5],
+        "note": "Von Hattuša aus über Zentralanatolien bis nach Nordsyrien.",
+        "ring": [
+          [41.0, 29.0], [41.5, 35.0], [40.5, 38.0], [38.5, 39.5], [37.2, 38.0],
+          [36.5, 36.2], [36.9, 34.5], [37.5, 32.0], [38.0, 29.5], [39.5, 27.5]
+        ]
+      },
+      {
+        "id": "bz-mitanni",
+        "name": "Mitanni",
+        "kind": "reich",
+        "color": 3,
+        "label": [36.3, 41.0],
+        "note": "Hurritisches Reich zwischen Euphrat und Tigris.",
+        "ring": [
+          [37.5, 38.5], [37.3, 42.5], [36.0, 44.0], [35.0, 42.0], [34.6, 40.5],
+          [35.6, 38.6], [36.5, 37.8]
+        ]
+      },
+      {
+        "id": "bz-babylonien",
+        "name": "Babylonien",
+        "kind": "reich",
+        "color": 4,
+        "label": [32.2, 45.4],
+        "note": "Kassitenzeit — Babylon beherrscht das untere Zweistromland.",
+        "ring": [
+          [34.6, 44.6], [34.0, 46.2], [32.0, 47.6], [30.4, 47.8], [30.0, 46.6],
+          [31.2, 44.2], [32.6, 43.4], [33.8, 43.6]
+        ]
+      }
+    ]
+  },
+  {
+    "id": "staemme",
+    "name": "Stämme Israels",
+    "hint": "nach der Landverteilung",
+    "yearFrom": -1400,
+    "yearTo": -1031,
+    "note": "Die Stammesgebiete nach Josua 13–21. Der Text beschreibt Grenzlinien über Ortsnamen, von denen viele nicht mehr lokalisierbar sind — die Flächen sind entsprechend grob.",
+    "territories": [
+      {
+        "id": "st-asser",
+        "name": "Asser",
+        "kind": "stamm",
+        "color": 1,
+        "label": [33.1, 35.1],
+        "ring": [[32.9, 34.95], [32.92, 35.3], [33.3, 35.35], [33.35, 35.1], [33.0, 34.9]]
+      },
+      {
+        "id": "st-naftali",
+        "name": "Naftali",
+        "kind": "stamm",
+        "color": 2,
+        "label": [33.1, 35.5],
+        "ring": [[32.88, 35.35], [32.85, 35.6], [33.28, 35.65], [33.32, 35.45], [33.05, 35.3]]
+      },
+      {
+        "id": "st-sebulon",
+        "name": "Sebulon",
+        "kind": "stamm",
+        "color": 4,
+        "label": [32.8, 35.17],
+        "ring": [[32.72, 35.05], [32.7, 35.3], [32.88, 35.35], [32.92, 35.05]]
+      },
+      {
+        "id": "st-issaschar",
+        "name": "Issaschar",
+        "kind": "stamm",
+        "color": 6,
+        "label": [32.75, 35.47],
+        "ring": [[32.68, 35.3], [32.62, 35.6], [32.85, 35.6], [32.88, 35.35]]
+      },
+      {
+        "id": "st-manasse-west",
+        "name": "Manasse (West)",
+        "kind": "stamm",
+        "color": 0,
+        "label": [32.55, 35.2],
+        "ring": [[32.4, 34.95], [32.38, 35.5], [32.65, 35.55], [32.75, 35.15], [32.6, 34.98]]
+      },
+      {
+        "id": "st-ephraim",
+        "name": "Ephraim",
+        "kind": "stamm",
+        "color": 3,
+        "label": [32.22, 35.25],
+        "ring": [[32.05, 35.05], [32.05, 35.55], [32.38, 35.5], [32.4, 35.05], [32.25, 34.95], [32.1, 34.95]]
+      },
+      {
+        "id": "st-dan",
+        "name": "Dan",
+        "kind": "stamm",
+        "color": 7,
+        "label": [32.0, 34.87],
+        "note": "Das ursprüngliche Gebiet; später wandert der Stamm in den Norden ab.",
+        "ring": [[32.05, 34.7], [32.1, 35.05], [31.95, 35.05], [31.9, 34.75]]
+      },
+      {
+        "id": "st-benjamin",
+        "name": "Benjamin",
+        "kind": "stamm",
+        "color": 5,
+        "label": [31.9, 35.3],
+        "ring": [[31.95, 35.0], [32.0, 35.55], [31.82, 35.55], [31.78, 35.15], [31.85, 35.0]]
+      },
+      {
+        "id": "st-juda",
+        "name": "Juda",
+        "kind": "stamm",
+        "color": 6,
+        "label": [31.6, 35.1],
+        "ring": [[31.9, 34.95], [31.95, 35.35], [31.8, 35.5], [31.4, 35.45], [31.3, 35.2], [31.3, 34.8], [31.6, 34.8]]
+      },
+      {
+        "id": "st-simeon",
+        "name": "Simeon",
+        "kind": "stamm",
+        "color": 1,
+        "label": [31.1, 34.85],
+        "ring": [[31.3, 34.8], [31.3, 35.2], [31.05, 35.15], [30.9, 34.85], [31.0, 34.6]]
+      },
+      {
+        "id": "st-ruben",
+        "name": "Ruben",
+        "kind": "stamm",
+        "color": 4,
+        "label": [31.6, 35.85],
+        "ring": [[31.85, 35.6], [31.9, 36.2], [31.45, 36.1], [31.3, 35.55]]
+      },
+      {
+        "id": "st-gad",
+        "name": "Gad",
+        "kind": "stamm",
+        "color": 2,
+        "label": [32.2, 35.9],
+        "ring": [[31.9, 35.6], [31.95, 36.25], [32.45, 36.2], [32.5, 35.6]]
+      },
+      {
+        "id": "st-manasse-ost",
+        "name": "Manasse (Ost)",
+        "kind": "stamm",
+        "color": 0,
+        "label": [32.85, 36.0],
+        "note": "Gilead und Baschan östlich des Jordan.",
+        "ring": [[32.5, 35.6], [32.5, 36.3], [33.1, 36.4], [33.25, 35.75], [32.9, 35.6]]
+      },
+      {
+        "id": "st-philister",
+        "name": "Philister",
+        "kind": "volk",
+        "color": 3,
+        "label": [31.5, 34.55],
+        "note": "Fünf Städte an der Küste — nie Teil der Landverteilung.",
+        "ring": [[31.75, 34.55], [31.7, 34.78], [31.3, 34.75], [31.15, 34.5], [31.45, 34.35]]
+      }
+    ]
+  },
+  {
+    "id": "koenigreich",
+    "name": "Reich Davids und Salomos",
+    "hint": "um 970 v. Chr.",
+    "yearFrom": -1030,
+    "yearTo": -932,
+    "note": "Die größte Ausdehnung israelitischer Herrschaft. Was außerhalb des Kernlands liegt, war tributpflichtig, nicht verwaltet — deshalb gestrichelt.",
+    "territories": [
+      {
+        "id": "kr-israel",
+        "name": "Israel",
+        "kind": "reich",
+        "color": 4,
+        "label": [32.3, 35.3],
+        "note": "Kernland zwischen Dan und Beerscheba, dazu Gilead.",
+        "ring": [
+          [33.35, 35.1], [33.4, 36.3], [32.5, 36.3], [31.9, 36.2], [31.45, 35.6],
+          [31.3, 35.5], [30.95, 35.0], [31.0, 34.8], [31.45, 34.4], [32.1, 34.7], [32.9, 34.95]
+        ]
+      },
+      {
+        "id": "kr-tributgebiete",
+        "name": "Tributgebiete",
+        "kind": "einfluss",
+        "color": 0,
+        "label": [30.3, 35.8],
+        "note": "Edom, Moab und Ammon — abhängig, aber mit eigenen Herrschern.",
+        "ring": [
+          [31.9, 36.25], [31.5, 36.5], [30.6, 36.3], [29.5, 35.9], [29.6, 35.3],
+          [30.95, 35.05], [31.3, 35.5], [31.45, 35.6]
+        ]
+      },
+      {
+        "id": "kr-aram-zoba",
+        "name": "Aram-Zoba",
+        "kind": "einfluss",
+        "color": 2,
+        "label": [34.2, 37.4],
+        "note": "Nach 2. Samuel 8 tributpflichtig bis an den Euphrat.",
+        "ring": [[33.3, 36.2], [33.6, 37.4], [34.6, 38.6], [35.2, 38.6], [34.6, 37.0], [34.0, 36.2]]
+      },
+      {
+        "id": "kr-phoenizien",
+        "name": "Phönizien",
+        "kind": "volk",
+        "color": 1,
+        "label": [34.0, 35.75],
+        "note": "Tyrus und Sidon — verbündet, nicht unterworfen.",
+        "ring": [[33.25, 35.2], [34.6, 35.95], [34.7, 36.2], [33.35, 35.55]]
+      },
+      {
+        "id": "kr-philister",
+        "name": "Philister",
+        "kind": "einfluss",
+        "color": 3,
+        "label": [31.5, 34.5],
+        "ring": [[31.75, 34.5], [31.7, 34.75], [31.3, 34.72], [31.15, 34.45], [31.45, 34.3]]
+      }
+    ]
+  },
+  {
+    "id": "geteiltes-reich",
+    "name": "Israel und Juda",
+    "hint": "um 850 v. Chr.",
+    "yearFrom": -931,
+    "yearTo": -723,
+    "note": "Nach dem Tod Salomos zerfällt das Reich. Die Nachbarn — Aram, Moab, Edom, Philistäa — werden wieder zu eigenständigen Gegenspielern.",
+    "territories": [
+      {
+        "id": "gr-israel",
+        "name": "Israel (Nordreich)",
+        "kind": "reich",
+        "color": 4,
+        "label": [32.5, 35.4],
+        "note": "Hauptstadt Samaria, zehn Stämme.",
+        "ring": [
+          [33.3, 35.2], [33.35, 36.0], [32.6, 36.3], [32.0, 36.2], [31.9, 35.55],
+          [31.85, 35.0], [32.2, 34.85], [32.9, 34.95]
+        ]
+      },
+      {
+        "id": "gr-juda",
+        "name": "Juda (Südreich)",
+        "kind": "reich",
+        "color": 6,
+        "label": [31.5, 35.05],
+        "note": "Hauptstadt Jerusalem, Davidsdynastie.",
+        "ring": [[31.9, 34.85], [31.95, 35.5], [31.35, 35.45], [30.95, 35.05], [31.0, 34.75], [31.5, 34.75]]
+      },
+      {
+        "id": "gr-philistaea",
+        "name": "Philistäa",
+        "kind": "volk",
+        "color": 3,
+        "label": [31.5, 34.5],
+        "ring": [[31.75, 34.5], [31.7, 34.75], [31.3, 34.72], [31.15, 34.45], [31.45, 34.3]]
+      },
+      {
+        "id": "gr-ammon",
+        "name": "Ammon",
+        "kind": "volk",
+        "color": 5,
+        "label": [32.1, 36.05],
+        "ring": [[32.35, 35.85], [32.4, 36.3], [31.85, 36.3], [31.85, 35.85]]
+      },
+      {
+        "id": "gr-moab",
+        "name": "Moab",
+        "kind": "volk",
+        "color": 0,
+        "label": [31.4, 35.8],
+        "note": "Der Mescha-Stein berichtet vom Krieg mit Israel.",
+        "ring": [[31.85, 35.5], [31.85, 36.2], [30.95, 36.0], [30.95, 35.45]]
+      },
+      {
+        "id": "gr-edom",
+        "name": "Edom",
+        "kind": "volk",
+        "color": 7,
+        "label": [30.3, 35.4],
+        "ring": [[30.95, 35.0], [30.95, 36.0], [29.55, 35.6], [29.5, 35.0]]
+      },
+      {
+        "id": "gr-aram",
+        "name": "Aram-Damaskus",
+        "kind": "reich",
+        "color": 2,
+        "label": [33.7, 36.9],
+        "note": "Der ständige Gegner des Nordreichs.",
+        "ring": [[32.9, 36.0], [33.1, 37.0], [33.9, 38.3], [34.6, 38.5], [34.5, 37.4], [33.8, 36.4], [33.3, 35.9]]
+      },
+      {
+        "id": "gr-phoenizien",
+        "name": "Phönizien",
+        "kind": "volk",
+        "color": 1,
+        "label": [34.0, 35.75],
+        "ring": [[33.25, 35.2], [34.6, 35.95], [34.7, 36.2], [33.35, 35.55]]
+      }
+    ]
+  },
+  {
+    "id": "assyrien",
+    "name": "Assyrisches Weltreich",
+    "hint": "um 700 v. Chr.",
+    "yearFrom": -722,
+    "yearTo": -627,
+    "note": "Samaria fällt 722 und wird assyrische Provinz. Juda übersteht die Belagerung von 701 als tributpflichtiger Vasall.",
+    "territories": [
+      {
+        "id": "as-assyrien",
+        "name": "Assyrisches Reich",
+        "kind": "reich",
+        "color": 3,
+        "label": [35.0, 41.5],
+        "note": "Von Ninive aus über Mesopotamien, Syrien und Israel.",
+        "ring": [
+          [37.5, 36.0], [37.8, 38.5], [38.5, 41.5], [37.5, 44.5], [36.5, 45.5],
+          [34.5, 46.5], [32.5, 47.0], [30.5, 47.8], [30.0, 46.5], [31.0, 44.0],
+          [32.5, 42.5], [33.5, 40.0], [33.5, 38.0], [33.3, 36.2], [32.4, 35.9],
+          [32.0, 35.3], [31.9, 34.8], [32.6, 34.9], [33.5, 35.4], [35.0, 35.8], [36.0, 36.0]
+        ]
+      },
+      {
+        "id": "as-juda",
+        "name": "Juda",
+        "kind": "einfluss",
+        "color": 6,
+        "label": [31.5, 35.05],
+        "note": "Vasall unter Hiskia und Manasse.",
+        "ring": [[31.9, 34.85], [31.95, 35.5], [31.35, 35.45], [30.95, 35.05], [31.0, 34.75], [31.5, 34.75]]
+      },
+      {
+        "id": "as-aegypten",
+        "name": "Ägypten",
+        "kind": "reich",
+        "color": 0,
+        "label": [27.5, 31.5],
+        "note": "25. Dynastie — von Kusch aus regiert, Gegenspieler Assyriens.",
+        "ring": [
+          [31.5, 29.9], [31.4, 32.2], [31.2, 33.6], [29.6, 34.7], [28.0, 34.3],
+          [29.4, 33.0], [29.9, 32.5], [27.5, 33.6], [25.5, 34.3], [23.9, 33.0],
+          [23.7, 32.5], [25.5, 32.2], [27.5, 30.8], [29.3, 30.4], [30.4, 30.0]
+        ]
+      },
+      {
+        "id": "as-medien",
+        "name": "Medien",
+        "kind": "reich",
+        "color": 2,
+        "label": [35.0, 48.5],
+        "ring": [[37.5, 45.5], [37.0, 49.0], [34.5, 51.0], [32.5, 50.0], [33.0, 47.0], [35.0, 45.5]]
+      }
+    ]
+  },
+  {
+    "id": "babylonien",
+    "name": "Neubabylonisches Reich",
+    "hint": "um 590 v. Chr.",
+    "yearFrom": -626,
+    "yearTo": -540,
+    "note": "Nebukadnezar erbt das assyrische Erbe im Westen. 586 fallen Jerusalem und der Tempel; Juda wird Provinz.",
+    "territories": [
+      {
+        "id": "bb-babylonien",
+        "name": "Babylonisches Reich",
+        "kind": "reich",
+        "color": 4,
+        "label": [33.5, 41.0],
+        "ring": [
+          [37.2, 36.2], [37.5, 39.5], [37.0, 42.5], [36.0, 44.5], [34.0, 46.5],
+          [32.0, 47.3], [30.4, 47.8], [29.9, 46.3], [31.0, 43.8], [32.3, 42.0],
+          [33.2, 39.0], [32.8, 36.5], [31.5, 35.4], [30.9, 34.9], [31.4, 34.4],
+          [32.6, 34.9], [34.5, 35.7], [36.0, 36.0]
+        ]
+      },
+      {
+        "id": "bb-aegypten",
+        "name": "Ägypten",
+        "kind": "reich",
+        "color": 0,
+        "label": [27.5, 31.5],
+        "note": "26. Dynastie — Zufluchtsort der Fliehenden nach 586.",
+        "ring": [
+          [31.5, 29.9], [31.4, 32.2], [31.2, 33.6], [29.6, 34.7], [28.0, 34.3],
+          [29.4, 33.0], [29.9, 32.5], [27.5, 33.6], [25.5, 34.3], [23.9, 33.0],
+          [23.7, 32.5], [25.5, 32.2], [27.5, 30.8], [29.3, 30.4], [30.4, 30.0]
+        ]
+      },
+      {
+        "id": "bb-medien",
+        "name": "Medien",
+        "kind": "reich",
+        "color": 2,
+        "label": [35.5, 49.0],
+        "ring": [[38.5, 44.5], [38.0, 49.5], [35.0, 52.0], [32.5, 50.5], [32.5, 47.0], [35.0, 45.0], [37.0, 44.0]]
+      },
+      {
+        "id": "bb-lydien",
+        "name": "Lydien",
+        "kind": "reich",
+        "color": 5,
+        "label": [39.0, 29.5],
+        "ring": [[41.0, 26.5], [41.0, 32.5], [38.0, 33.5], [36.8, 30.0], [37.5, 27.0], [39.0, 26.2]]
+      }
+    ]
+  },
+  {
+    "id": "persien",
+    "name": "Perserreich",
+    "hint": "um 500 v. Chr.",
+    "yearFrom": -539,
+    "yearTo": -333,
+    "note": "Das größte Reich der Alten Welt, im Osten über den Kartenrand hinaus. Juda ist darin die kleine Provinz Jehud — Kyrus, Esra und Nehemia gehören in diesen Rahmen.",
+    "territories": [
+      {
+        "id": "pe-perserreich",
+        "name": "Perserreich",
+        "kind": "reich",
+        "color": 2,
+        "label": [34.0, 50.0],
+        "note": "Zwanzig Satrapien von der Ägäis bis zum Indus.",
+        "ring": [
+          [41.3, 26.3], [41.5, 32.0], [41.7, 41.0], [40.5, 48.0], [39.0, 53.5],
+          [40.0, 60.0], [37.5, 66.0], [34.5, 70.0], [30.0, 71.0], [25.5, 67.5],
+          [25.5, 60.0], [27.0, 56.5], [29.5, 50.5], [30.3, 48.3], [29.8, 47.0],
+          [29.0, 44.5], [30.5, 40.0], [30.0, 36.5], [29.4, 34.9], [28.0, 34.4],
+          [29.5, 32.8], [27.0, 33.6], [24.5, 34.0], [23.8, 32.9], [23.6, 32.4],
+          [26.0, 32.0], [29.0, 30.4], [31.3, 29.8], [31.5, 32.3], [32.8, 34.9],
+          [34.6, 35.9], [36.0, 35.8], [36.5, 34.5], [36.5, 30.0], [37.8, 27.0], [40.0, 26.0]
+        ]
+      },
+      {
+        "id": "pe-jehud",
+        "name": "Jehud",
+        "kind": "provinz",
+        "color": 6,
+        "label": [31.6, 35.1],
+        "note": "Die persische Provinz um Jerusalem — kaum größer als das alte Benjamin und Juda-Bergland.",
+        "ring": [[31.95, 34.95], [31.98, 35.45], [31.5, 35.45], [31.3, 35.05], [31.5, 34.85]]
+      }
+    ]
+  },
+  {
+    "id": "hellenismus",
+    "name": "Diadochenreiche",
+    "hint": "um 250 v. Chr.",
+    "yearFrom": -332,
+    "yearTo": -143,
+    "note": "Nach Alexanders Tod teilen seine Feldherren das Reich. Judäa liegt an der Nahtstelle zwischen Ptolemäern und Seleukiden und wechselt mehrfach die Seite.",
+    "territories": [
+      {
+        "id": "he-ptolemaeer",
+        "name": "Ptolemäerreich",
+        "kind": "reich",
+        "color": 0,
+        "label": [28.0, 31.5],
+        "note": "Ägypten mit Südsyrien und Judäa — Hauptstadt Alexandria, Heimat der Septuaginta.",
+        "ring": [
+          [31.3, 29.8], [31.5, 32.3], [32.8, 34.9], [33.6, 35.4], [34.4, 35.9],
+          [34.5, 36.3], [33.4, 36.3], [32.5, 36.3], [31.3, 35.6], [29.4, 34.9],
+          [28.0, 34.4], [29.5, 32.8], [26.5, 34.0], [23.8, 32.9], [23.6, 32.3],
+          [27.0, 31.0], [29.5, 30.2]
+        ]
+      },
+      {
+        "id": "he-zypern",
+        "name": "Zypern",
+        "kind": "provinz",
+        "color": 0,
+        "note": "Ptolemäisch.",
+        "ring": [[35.7, 34.55], [35.0, 34.1], [34.55, 32.9], [35.2, 32.3], [35.6, 33.4]]
+      },
+      {
+        "id": "he-seleukiden",
+        "name": "Seleukidenreich",
+        "kind": "reich",
+        "color": 3,
+        "label": [34.5, 45.0],
+        "note": "Von Antiochia bis nach Iran — unter Antiochus IV. Auslöser des Makkabäeraufstands.",
+        "ring": [
+          [37.4, 33.8], [38.2, 37.0], [38.0, 41.0], [37.5, 44.0], [38.0, 48.5],
+          [37.0, 53.0], [36.0, 58.0], [33.5, 61.5], [30.0, 60.0], [27.5, 57.0],
+          [29.0, 51.5], [30.2, 48.2], [29.5, 45.5], [31.0, 41.5], [32.6, 38.5],
+          [33.5, 36.5], [34.6, 36.2], [35.8, 35.9], [36.6, 36.2], [36.9, 34.6]
+        ]
+      },
+      {
+        "id": "he-makedonien",
+        "name": "Makedonien",
+        "kind": "reich",
+        "color": 4,
+        "label": [40.5, 22.5],
+        "ring": [[41.5, 20.5], [42.2, 23.5], [41.0, 26.5], [40.0, 24.5], [39.0, 22.5], [39.5, 20.5]]
+      },
+      {
+        "id": "he-pergamon",
+        "name": "Pergamon",
+        "kind": "reich",
+        "color": 1,
+        "label": [38.9, 27.6],
+        "ring": [[39.8, 26.3], [40.0, 28.5], [38.5, 29.5], [37.5, 27.5], [38.5, 26.3]]
+      },
+      {
+        "id": "he-galater",
+        "name": "Galater",
+        "kind": "volk",
+        "color": 5,
+        "label": [39.6, 33.0],
+        "note": "Keltische Einwanderer in Zentralanatolien — später Adressaten des Galaterbriefs.",
+        "ring": [[40.3, 31.5], [40.2, 34.5], [39.0, 34.8], [38.8, 31.8]]
+      }
+    ]
+  },
+  {
+    "id": "hasmonaeer",
+    "name": "Hasmonäisches Reich",
+    "hint": "um 90 v. Chr.",
+    "yearFrom": -142,
+    "yearTo": -64,
+    "note": "Nach dem Makkabäeraufstand ist Judäa für rund achtzig Jahre unabhängig und dehnt sich fast auf die Grenzen der Königszeit aus.",
+    "territories": [
+      {
+        "id": "ha-hasmonaeer",
+        "name": "Hasmonäisches Reich",
+        "kind": "reich",
+        "color": 6,
+        "label": [32.0, 35.2],
+        "ring": [
+          [33.3, 35.4], [33.35, 36.0], [32.6, 36.3], [31.9, 36.0], [31.4, 35.6],
+          [30.9, 35.2], [30.8, 34.7], [31.4, 34.35], [32.3, 34.8], [32.9, 34.95]
+        ]
+      },
+      {
+        "id": "ha-nabataeer",
+        "name": "Nabatäer",
+        "kind": "reich",
+        "color": 0,
+        "label": [29.8, 36.0],
+        "note": "Karawanenreich mit der Hauptstadt Petra.",
+        "ring": [[31.3, 36.4], [30.5, 37.5], [29.0, 36.5], [28.5, 35.0], [29.6, 34.95], [30.9, 35.3], [31.2, 35.7]]
+      },
+      {
+        "id": "ha-seleukiden",
+        "name": "Seleukidenreich",
+        "kind": "reich",
+        "color": 3,
+        "label": [35.3, 37.0],
+        "note": "Nur noch ein Rest um Antiochia.",
+        "ring": [[36.9, 35.9], [37.0, 38.5], [35.5, 39.0], [34.5, 37.0], [33.5, 36.3], [34.6, 36.1], [35.9, 35.85]]
+      },
+      {
+        "id": "ha-asia",
+        "name": "Provinz Asia",
+        "kind": "provinz",
+        "color": 4,
+        "label": [38.8, 28.5],
+        "note": "Rom greift seit 133 v. Chr. nach Kleinasien.",
+        "ring": [[41.0, 26.0], [41.0, 30.0], [38.0, 31.0], [36.7, 29.5], [37.5, 27.0], [39.5, 26.0]]
+      }
+    ]
+  },
+  {
+    "id": "herodianisch",
+    "name": "Herodianische Teilgebiete",
+    "hint": "um 30 n. Chr.",
+    "yearFrom": -63,
+    "yearTo": 44,
+    "note": "Die Landschaft der Evangelien: Nach dem Tod Herodes' des Großen ist das Land aufgeteilt. Judäa und Samaria stehen unter römischem Präfekten, Galiläa und Peräa unter Herodes Antipas.",
+    "territories": [
+      {
+        "id": "hd-galilaea",
+        "name": "Galiläa",
+        "kind": "provinz",
+        "color": 1,
+        "label": [32.8, 35.3],
+        "note": "Herodes Antipas — Nazareth, Kapernaum, der See.",
+        "ring": [[33.05, 35.15], [32.95, 35.6], [32.6, 35.6], [32.6, 35.05], [32.85, 34.98]]
+      },
+      {
+        "id": "hd-samaria",
+        "name": "Samaria",
+        "kind": "provinz",
+        "color": 5,
+        "label": [32.3, 35.2],
+        "note": "Römisch verwaltet, von Juden gemieden — Johannes 4 spielt hier.",
+        "ring": [[32.6, 35.0], [32.6, 35.55], [32.05, 35.55], [32.0, 35.0], [32.3, 34.9]]
+      },
+      {
+        "id": "hd-judaea",
+        "name": "Judäa",
+        "kind": "provinz",
+        "color": 6,
+        "label": [31.7, 35.05],
+        "note": "Seit 6 n. Chr. unter römischem Präfekten, Amtssitz Cäsarea.",
+        "ring": [[32.0, 34.85], [32.05, 35.55], [31.35, 35.45], [31.3, 34.9], [31.6, 34.75]]
+      },
+      {
+        "id": "hd-idumaea",
+        "name": "Idumäa",
+        "kind": "provinz",
+        "color": 3,
+        "label": [31.1, 34.9],
+        "note": "Herkunftsland der Herodesfamilie.",
+        "ring": [[31.3, 34.75], [31.35, 35.4], [31.0, 35.15], [30.85, 34.6], [31.05, 34.55]]
+      },
+      {
+        "id": "hd-peraea",
+        "name": "Peräa",
+        "kind": "provinz",
+        "color": 1,
+        "label": [31.9, 35.8],
+        "note": "Ebenfalls Antipas — Ort der Taufe und der Gefangenschaft des Täufers.",
+        "ring": [[32.45, 35.6], [32.5, 36.0], [31.55, 36.0], [31.45, 35.55], [31.9, 35.55]]
+      },
+      {
+        "id": "hd-dekapolis",
+        "name": "Dekapolis",
+        "kind": "volk",
+        "color": 0,
+        "label": [32.6, 36.0],
+        "note": "Bund griechischer Städte östlich des Jordan.",
+        "ring": [[32.9, 35.65], [33.0, 36.4], [32.3, 36.3], [32.35, 35.7]]
+      },
+      {
+        "id": "hd-trachonitis",
+        "name": "Ituräa und Trachonitis",
+        "kind": "provinz",
+        "color": 2,
+        "label": [33.3, 36.0],
+        "note": "Herodes Philippus — Cäsarea Philippi liegt hier.",
+        "ring": [[33.5, 35.55], [33.6, 36.5], [32.95, 36.45], [32.9, 35.6], [33.15, 35.4]]
+      },
+      {
+        "id": "hd-nabataea",
+        "name": "Nabatäer",
+        "kind": "reich",
+        "color": 7,
+        "label": [29.8, 36.0],
+        "ring": [[31.3, 36.4], [30.5, 37.5], [29.0, 36.5], [28.5, 35.0], [29.6, 34.95], [30.9, 35.3], [31.2, 35.7]]
+      },
+      {
+        "id": "hd-syria",
+        "name": "Provinz Syria",
+        "kind": "provinz",
+        "color": 4,
+        "label": [35.2, 37.5],
+        "note": "Der übergeordnete römische Statthalter sitzt in Antiochia.",
+        "ring": [[36.5, 36.0], [36.6, 38.5], [35.0, 39.5], [34.0, 37.5], [33.6, 36.4], [34.5, 36.2], [35.8, 36.0]]
+      },
+      {
+        "id": "hd-phoenizien",
+        "name": "Phönizien",
+        "kind": "volk",
+        "color": 3,
+        "label": [34.0, 35.7],
+        "note": "Tyrus und Sidon, Teil der Provinz Syria.",
+        "ring": [[33.2, 35.2], [34.5, 35.9], [34.6, 36.15], [33.4, 35.5]]
+      }
+    ]
+  },
+  {
+    "id": "roemische-provinzen",
+    "name": "Römische Provinzen",
+    "hint": "um 60 n. Chr.",
+    "yearFrom": 45,
+    "yearTo": 100,
+    "note": "Der Rahmen der Apostelgeschichte und der Briefe: Die Namen der Provinzen sind die Adressen der Gemeinden — Galatien, Asien, Makedonien, Achaja.",
+    "territories": [
+      {
+        "id": "rp-italia",
+        "name": "Italia",
+        "kind": "provinz",
+        "color": 3,
+        "label": [42.5, 12.5],
+        "note": "Ziel der letzten Reise des Paulus.",
+        "ring": [
+          [46.0, 7.0], [46.5, 13.5], [45.5, 13.6], [44.0, 12.4], [41.5, 15.9],
+          [40.0, 18.5], [38.0, 16.0], [38.2, 15.6], [40.5, 14.0], [41.5, 12.0],
+          [43.5, 10.0], [44.5, 8.0]
+        ]
+      },
+      {
+        "id": "rp-illyricum",
+        "name": "Illyricum",
+        "kind": "provinz",
+        "color": 5,
+        "label": [44.0, 17.5],
+        "ring": [[46.0, 13.5], [45.0, 19.5], [42.5, 19.5], [42.5, 18.3], [44.5, 14.5]]
+      },
+      {
+        "id": "rp-macedonia",
+        "name": "Macedonia",
+        "kind": "provinz",
+        "color": 4,
+        "label": [40.8, 22.5],
+        "note": "Philippi, Thessalonich, Beröa.",
+        "ring": [[41.5, 20.3], [42.2, 23.5], [41.2, 26.0], [40.0, 24.0], [39.5, 21.5], [40.2, 20.0]]
+      },
+      {
+        "id": "rp-achaia",
+        "name": "Achaia",
+        "kind": "provinz",
+        "color": 1,
+        "label": [37.9, 22.4],
+        "note": "Athen und Korinth.",
+        "ring": [[39.4, 20.6], [39.3, 23.5], [38.9, 24.5], [37.0, 23.5], [36.7, 22.5], [38.2, 21.0], [38.5, 20.5]]
+      },
+      {
+        "id": "rp-asia",
+        "name": "Asia",
+        "kind": "provinz",
+        "color": 6,
+        "label": [38.8, 28.5],
+        "note": "Ephesus und die sieben Gemeinden der Offenbarung.",
+        "ring": [[41.0, 26.0], [40.5, 30.0], [38.5, 31.0], [37.0, 30.0], [36.9, 27.5], [38.0, 26.2], [39.6, 26.0]]
+      },
+      {
+        "id": "rp-bithynia",
+        "name": "Bithynia et Pontus",
+        "kind": "provinz",
+        "color": 2,
+        "label": [41.0, 33.5],
+        "note": "Paulus wollte hierher — Apostelgeschichte 16,7 hielt ihn davon ab.",
+        "ring": [[41.2, 29.0], [42.0, 35.0], [41.5, 38.0], [40.5, 38.5], [40.2, 34.0], [40.4, 29.5]]
+      },
+      {
+        "id": "rp-galatia",
+        "name": "Galatia",
+        "kind": "provinz",
+        "color": 0,
+        "label": [39.3, 33.0],
+        "note": "Ikonium, Lystra, Derbe liegen im Süden der Provinz.",
+        "ring": [[40.4, 31.0], [40.3, 35.0], [38.5, 35.0], [38.0, 31.5]]
+      },
+      {
+        "id": "rp-cappadocia",
+        "name": "Cappadocia",
+        "kind": "provinz",
+        "color": 5,
+        "label": [38.8, 37.5],
+        "ring": [[40.2, 35.2], [40.0, 40.5], [38.0, 39.5], [37.5, 35.5], [38.4, 34.8]]
+      },
+      {
+        "id": "rp-lycia",
+        "name": "Lycia et Pamphylia",
+        "kind": "provinz",
+        "color": 4,
+        "label": [36.9, 30.6],
+        "note": "Perge, Attalia, Myra — Häfen der Missionsreisen.",
+        "ring": [[37.4, 29.0], [37.3, 32.4], [36.3, 32.5], [36.1, 29.6], [36.6, 28.8]]
+      },
+      {
+        "id": "rp-cilicia",
+        "name": "Cilicia",
+        "kind": "provinz",
+        "color": 1,
+        "label": [36.9, 34.5],
+        "note": "Tarsus, die Heimatstadt des Paulus.",
+        "ring": [[37.4, 32.5], [37.6, 36.2], [36.6, 36.1], [36.0, 34.0], [36.3, 32.6]]
+      },
+      {
+        "id": "rp-syria",
+        "name": "Syria",
+        "kind": "provinz",
+        "color": 3,
+        "label": [35.2, 37.5],
+        "note": "Antiochia — Ausgangspunkt aller drei Missionsreisen.",
+        "ring": [[36.5, 36.0], [36.6, 38.5], [35.0, 39.5], [34.0, 37.5], [33.6, 36.4], [34.5, 36.2], [35.8, 36.0]]
+      },
+      {
+        "id": "rp-judaea",
+        "name": "Judaea",
+        "kind": "provinz",
+        "color": 6,
+        "label": [31.8, 35.0],
+        "note": "Ab 44 n. Chr. wieder unter Prokuratoren; 70 fällt Jerusalem.",
+        "ring": [
+          [33.3, 35.2], [33.3, 36.0], [32.5, 36.2], [31.4, 35.6], [30.9, 35.2],
+          [30.85, 34.6], [31.5, 34.4], [32.5, 34.85], [32.9, 34.95]
+        ]
+      },
+      {
+        "id": "rp-aegyptus",
+        "name": "Aegyptus",
+        "kind": "provinz",
+        "color": 0,
+        "label": [27.5, 31.5],
+        "note": "Kornkammer des Reiches, Alexandria die zweite Stadt.",
+        "ring": [
+          [31.5, 29.9], [31.4, 32.2], [31.2, 33.6], [29.6, 34.7], [28.0, 34.3],
+          [29.4, 33.0], [29.9, 32.5], [27.5, 33.6], [25.5, 34.3], [23.9, 33.0],
+          [23.7, 32.5], [25.5, 32.2], [27.5, 30.8], [29.3, 30.4], [30.4, 30.0]
+        ]
+      },
+      {
+        "id": "rp-creta",
+        "name": "Creta",
+        "kind": "provinz",
+        "color": 7,
+        "label": [35.2, 24.8],
+        "note": "Station der Romfahrt, Wirkungsort des Titus.",
+        "ring": [[35.7, 23.5], [35.4, 26.3], [35.0, 26.2], [34.85, 24.5], [35.2, 23.5]]
+      },
+      {
+        "id": "rp-cyprus",
+        "name": "Cyprus",
+        "kind": "provinz",
+        "color": 2,
+        "label": [35.1, 33.3],
+        "note": "Erste Station der ersten Missionsreise.",
+        "ring": [[35.7, 34.55], [35.0, 34.1], [34.55, 32.9], [35.2, 32.3], [35.6, 33.4]]
+      },
+      {
+        "id": "rp-arabia",
+        "name": "Nabatäerreich",
+        "kind": "reich",
+        "color": 7,
+        "label": [29.8, 36.0],
+        "note": "Noch selbstständig; erst 106 n. Chr. Provinz Arabia.",
+        "ring": [[31.3, 36.4], [30.5, 37.5], [29.0, 36.5], [28.5, 35.0], [29.6, 34.95], [30.9, 35.3], [31.2, 35.7]]
+      }
+    ]
+  }
+]

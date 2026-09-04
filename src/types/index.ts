@@ -304,6 +304,53 @@ export interface Period {
 }
 
 /* ------------------------------------------------------------------ *
+ * Historische Grenzen
+ * ------------------------------------------------------------------ */
+
+/**
+ * Was für ein Gebilde ist das Gebiet?
+ *
+ * `einfluss` ist keine Herrschaftsform, sondern eine Aussage über die
+ * Quellenlage: tributpflichtige oder locker abhängige Gebiete, deren Grenze
+ * niemand ziehen kann. Sie werden schwächer und gestrichelt gezeichnet.
+ */
+export type TerritoryKind = 'reich' | 'provinz' | 'stamm' | 'volk' | 'einfluss';
+
+export interface Territory {
+  id: string;
+  name: string;
+  kind: TerritoryKind;
+  /** Platz in der Gebietspalette, 0–7 — siehe `--bl-terr-*` in index.css. */
+  color: number;
+  /** Wo die Beschriftung sitzt. Fehlt sie, bleibt das Gebiet unbeschriftet. */
+  label?: [number, number];
+  /** Ein Satz für den Tooltip. */
+  note?: string;
+  /** Umriss als Folge von [lat, lng]. Bewusst nur ein Ring, keine Löcher. */
+  ring: [number, number][];
+}
+
+/**
+ * Ein Kartenbild einer Epoche.
+ *
+ * Die Umrisse sind **schematisch**: Antike Herrschaftsgebiete hatten
+ * Einflusszonen statt Katasterlinien, und für die meisten Zeiträume ist der
+ * Verlauf umstritten. Die Ebene soll Größenverhältnisse und Nachbarschaften
+ * zeigen — mehr behauptet sie nicht.
+ */
+export interface TerritoryEra {
+  id: string;
+  name: string;
+  /** Kurze Zeitangabe für den Umschalter: „um 30 n. Chr.". */
+  hint: string;
+  /** Zeitfenster, in dem diese Karte automatisch gewählt wird. */
+  yearFrom: number;
+  yearTo: number;
+  note: string;
+  territories: Territory[];
+}
+
+/* ------------------------------------------------------------------ *
  * Verse
  * ------------------------------------------------------------------ */
 

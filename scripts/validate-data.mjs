@@ -60,6 +60,7 @@ const placesData = load('places.json');
 const persons = load('persons.json');
 const events = load('events.json');
 const journeys = load('journeys.json');
+const territoryEras = load('territories.json');
 
 /* ------------------------------------------------------------------ *
  * Eindeutigkeit der Kennungen
@@ -374,6 +375,89 @@ for (const journey of journeys) {
 }
 
 /* ------------------------------------------------------------------ *
+ * Historische Grenzen
+ *
+ * Die Umrisse sind schematisch — geprüft wird deshalb nicht ihre Richtigkeit,
+ * sondern nur, dass sie zeichenbar sind und die Epochen den Zeitstrahl
+ * lückenlos und überschneidungsfrei abdecken. Ohne das müsste die Automatik
+ * bei manchen Jahren raten, welches Kartenbild sie zeigt.
+ * ------------------------------------------------------------------ */
+
+const TERRITORY_KINDS = new Set(['reich', 'provinz', 'stamm', 'volk', 'einfluss']);
+
+// Weiter gefasst als bei den Orten: Das Perserreich reicht bis an den Indus.
+const TERRITORY_BBOX = { minLat: 15, maxLat: 50, minLng: -12, maxLng: 75 };
+
+const eraIds = idSet(territoryEras, 'territories.json');
+const territoryIds = new Set();
+
+for (const era of territoryEras) {
+  const where = `territories.json/${era.id}`;
+  if (!era.name || !era.hint || !era.note) fail(where, 'name, hint oder note fehlt');
+  if (!Number.isInteger(era.yearFrom) || !Number.isInteger(era.yearTo) || era.yearFrom === 0 || era.yearTo === 0) {
+    fail(where, `yearFrom/yearTo sind keine gültigen Jahreszahlen (kein Jahr 0)`);
+  } else if (era.yearFrom >= era.yearTo) {
+    fail(where, 'yearFrom muss vor yearTo liegen');
+  }
+  if (!Array.isArray(era.territories) || era.territories.length === 0) {
+    fail(where, 'ohne Gebiete');
+    continue;
+  }
+
+  for (const territory of era.territories) {
+    const tWhere = `${where}/${territory.id}`;
+    if (typeof territory.id !== 'string' || !/^[a-z0-9-]+$/.test(territory.id)) {
+      fail(tWhere, 'ungültige id');
+    } else if (territoryIds.has(territory.id)) {
+      fail(tWhere, `doppelte Gebiets-id "${territory.id}"`);
+    } else {
+      territoryIds.add(territory.id);
+    }
+    if (!territory.name) fail(tWhere, 'ohne Namen');
+    if (!TERRITORY_KINDS.has(territory.kind)) fail(tWhere, `unbekannte kind "${territory.kind}"`);
+    if (!Number.isInteger(territory.color) || territory.color < 0 || territory.color > 7) {
+      fail(tWhere, `color ${territory.color} liegt außerhalb 0–7`);
+    }
+
+    const ring = territory.ring;
+    if (!Array.isArray(ring) || ring.length < 3) {
+      fail(tWhere, 'ring braucht mindestens drei Punkte');
+      continue;
+    }
+    for (const point of [...ring, ...(territory.label ? [territory.label] : [])]) {
+      if (!Array.isArray(point) || point.length !== 2 || typeof point[0] !== 'number' || typeof point[1] !== 'number') {
+        fail(tWhere, `Punkt ${JSON.stringify(point)} ist kein [lat, lng]-Paar`);
+        continue;
+      }
+      const [lat, lng] = point;
+      if (
+        lat < TERRITORY_BBOX.minLat || lat > TERRITORY_BBOX.maxLat ||
+        lng < TERRITORY_BBOX.minLng || lng > TERRITORY_BBOX.maxLng
+      ) {
+        warn(tWhere, `Punkt ${lat}/${lng} liegt außerhalb der dargestellten Welt — Zahlendreher?`);
+      }
+    }
+  }
+}
+
+const sortedEras = [...territoryEras].sort((a, b) => a.yearFrom - b.yearFrom);
+for (let i = 1; i < sortedEras.length; i++) {
+  const prev = sortedEras[i - 1];
+  const cur = sortedEras[i];
+  if (cur.yearFrom <= prev.yearTo) {
+    fail('territories.json', `"${prev.name}" und "${cur.name}" überlappen sich — zu einem Jahr gehört genau ein Kartenbild`);
+  } else if (cur.yearFrom > prev.yearTo + 1) {
+    warn('territories.json', `zwischen "${prev.name}" und "${cur.name}" klafft eine Lücke (${prev.yearTo}…${cur.yearFrom})`);
+  }
+}
+if (sortedEras.length) {
+  const first = sortedEras[0];
+  const last = sortedEras[sortedEras.length - 1];
+  if (first.yearFrom > MIN_YEAR) warn('territories.json', `vor ${first.yearFrom} gibt es kein Kartenbild`);
+  if (last.yearTo < MAX_YEAR) warn('territories.json', `nach ${last.yearTo} gibt es kein Kartenbild`);
+}
+
+/* ------------------------------------------------------------------ *
  * Abdeckung — keine Fehler, aber gut zu wissen
  * ------------------------------------------------------------------ */
 
@@ -406,6 +490,7 @@ console.log(`  Personen          ${String(persons.length).padStart(4)}   (${orph
 console.log(`  Ereignisse        ${String(events.length).padStart(4)}   von ${Math.min(...yearsCovered)} bis ${Math.max(...yearsCovered)}`);
 console.log(`  davon außerbiblisch ${String(ausserbiblisch.length).padStart(2)}   (ohne Bibelstelle, für den Zusammenhang)`);
 console.log(`  Reisen            ${String(journeys.length).padStart(4)}`);
+console.log(`  Gebietskarten     ${String(eraIds.size).padStart(4)}   (${territoryIds.size} Gebiete)`);
 console.log(`  Bücher ohne Ereignis: ${booksWithoutEvents.length}`);
 console.log('');
 

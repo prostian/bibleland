@@ -200,6 +200,50 @@ export function placeIcon(
   });
 }
 
+/** Text, der in Icon-Markup eingesetzt wird, unschädlich machen. */
+function escapeHtml(value: string): string {
+  return value
+    .replaceAll('&', '&amp;')
+    .replaceAll('<', '&lt;')
+    .replaceAll('>', '&gt;')
+    .replaceAll('"', '&quot;')
+    .replaceAll("'", '&#39;');
+}
+
+/**
+ * Der Ortsname unter dem Pin.
+ *
+ * Die Kacheln beschriften nach heutigem Ortsnamen und in einer Schriftgröße,
+ * die für eine Übersichtskarte gedacht ist — auf einer Bibelkarte sucht man
+ * dagegen „Kapernaum", nicht „Kfar Nahum", und will es auch lesen können.
+ * Deshalb setzt die App die biblischen Namen selbst, in eigener Größe und
+ * mit hellem Rand gegen den unruhigen Kartengrund.
+ *
+ * `iconSize: [0, 0]` ist Absicht: Die Beschriftung soll den Pin nicht
+ * überdecken und nichts anklickbar machen. Ihre Ausdehnung bekommt sie erst
+ * aus dem Text, ausgerichtet wird sie in CSS.
+ */
+export function placeLabelIcon(name: string, state: MarkerState = {}): L.DivIcon {
+  return L.divIcon({
+    className: 'bl-place-label',
+    html: `<span data-selected="${state.selected ? 'true' : 'false'}">${escapeHtml(name)}</span>`,
+    iconSize: [0, 0],
+    iconAnchor: [0, 0],
+  });
+}
+
+/** Name eines historischen Gebiets, in dessen Farbe. */
+export function territoryLabelIcon(name: string, color: string, vague: boolean): L.DivIcon {
+  return L.divIcon({
+    className: 'bl-terr-label',
+    html: `<span style="--terr-color: ${color}" data-vague="${vague ? 'true' : 'false'}">${escapeHtml(
+      name,
+    )}</span>`,
+    iconSize: [0, 0],
+    iconAnchor: [0, 0],
+  });
+}
+
 /** Nummerierter Punkt für eine Reise-Etappe. */
 export function journeyLegIcon(order: number, section: Section): L.DivIcon {
   return L.divIcon({

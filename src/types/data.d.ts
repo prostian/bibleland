@@ -46,6 +46,12 @@ declare module '@/data/journeys.json' {
   export default journeys;
 }
 
+declare module '@/data/territories.json' {
+  import type { TerritoryEra } from '@/types';
+  const eras: TerritoryEra[];
+  export default eras;
+}
+
 declare module '@/data/verses/verses.de.public.json' {
   import type { VerseBundle } from '@/types';
   const bundle: VerseBundle;
