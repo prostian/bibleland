@@ -25,6 +25,17 @@ export const useIsMobile = () => useMediaQuery('(max-width: 767px)');
 export const useIsTablet = () => useMediaQuery('(max-width: 1023px)');
 
 /**
+ * Wird mit dem Finger bedient?
+ *
+ * Bewusst nicht an der Bildschirmbreite abgelesen: Ein Tablet im Querformat
+ * ist breit und wird trotzdem angetippt, ein schmales Browserfenster auf dem
+ * Rechner ist schmal und wird geklickt. Was sich unterscheiden muss, sind
+ * Trefferflächen und alles, was nur beim Überfahren erscheint — und das
+ * hängt am Zeigegerät, nicht an der Breite.
+ */
+export const useIsTouch = () => useMediaQuery('(pointer: coarse)');
+
+/**
  * Hat der Nutzer Bewegung abbestellt? Steuert `flyTo` gegen `setView`, die
  * Panel-Übergänge und die Graph-Simulation.
  */

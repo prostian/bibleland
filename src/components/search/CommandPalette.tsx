@@ -70,6 +70,13 @@ export default function CommandPalette({ open, onClose }: CommandPaletteProps) {
     }
   };
 
+  /*
+   * Auf dem Handy sitzt die Suche oben am Rand und füllt die Breite, statt
+   * als Kasten in der Bildmitte zu schweben: Die Bildschirmtastatur schiebt
+   * sich von unten über die Hälfte des Bildes: Ein zentrierter Kasten läge
+   * darunter. Aus demselben Grund ist das Eingabefeld dort 16 Pixel groß —
+   * bei kleinerer Schrift zoomt iOS beim Antippen hinein.
+   */
   return (
     <AnimatePresence>
       <motion.div
@@ -78,7 +85,7 @@ export default function CommandPalette({ open, onClose }: CommandPaletteProps) {
         animate={{ opacity: 1 }}
         exit={{ opacity: 0 }}
         transition={{ duration: reducedMotion ? 0 : 0.14 }}
-        className="fixed inset-0 z-50 flex items-start justify-center bg-black/35 px-4 pt-[12vh] backdrop-blur-[2px]"
+        className="fixed inset-0 z-50 flex items-start justify-center bg-black/35 backdrop-blur-[2px] sm:px-4 sm:pt-[12vh]"
         onClick={onClose}
       >
         <motion.div
@@ -92,9 +99,9 @@ export default function CommandPalette({ open, onClose }: CommandPaletteProps) {
           transition={{ duration: reducedMotion ? 0 : 0.16, ease: [0.2, 0, 0.2, 1] }}
           onClick={(e) => e.stopPropagation()}
           onKeyDown={handleKeyDown}
-          className="w-full max-w-xl overflow-hidden rounded-2xl border border-line bg-surface shadow-pop"
+          className="flex max-h-[92dvh] w-full max-w-xl flex-col overflow-hidden border-line bg-surface shadow-pop max-sm:h-[92dvh] max-sm:rounded-b-2xl sm:rounded-2xl sm:border"
         >
-          <div className="flex items-center gap-2.5 border-b border-line px-3.5 py-3">
+          <div className="flex shrink-0 items-center gap-2.5 border-b border-line px-3.5 py-3">
             <svg
               viewBox="0 0 16 16"
               className="size-4 shrink-0 text-ink-subtle"
@@ -112,14 +119,31 @@ export default function CommandPalette({ open, onClose }: CommandPaletteProps) {
               onChange={(e) => setQuery(e.target.value)}
               placeholder="Ereignis, Person, Ort, Bibelstelle oder Jahr …"
               aria-label="Suchbegriff"
-              className="min-w-0 flex-1 bg-transparent text-sm text-ink outline-none placeholder:text-ink-subtle"
+              className="min-w-0 flex-1 bg-transparent text-base text-ink outline-none placeholder:text-ink-subtle sm:text-sm"
             />
-            <kbd className="shrink-0 rounded border border-line px-1.5 py-0.5 font-sans text-[10px] text-ink-subtle">
+            <kbd className="hidden shrink-0 rounded border border-line px-1.5 py-0.5 font-sans text-[10px] text-ink-subtle sm:inline">
               Esc
             </kbd>
+            <button
+              type="button"
+              onClick={onClose}
+              aria-label="Suche schließen"
+              className="tap grid size-9 shrink-0 place-items-center rounded-lg text-ink-subtle transition-colors hover:bg-surface-2 hover:text-ink sm:hidden"
+            >
+              <svg
+                viewBox="0 0 16 16"
+                className="size-4"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="1.6"
+                aria-hidden="true"
+              >
+                <path d="M4 4l8 8M12 4l-8 8" strokeLinecap="round" />
+              </svg>
+            </button>
           </div>
 
-          <div className="max-h-[52vh] overflow-y-auto scrollbar-slim p-1.5">
+          <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain scrollbar-slim p-1.5 sm:max-h-[52vh] sm:flex-none">
             {query.trim().length === 0 ? (
               <p className="px-2.5 py-6 text-center text-xs leading-relaxed text-ink-subtle">
                 Versuch „Genesis 12", „Moses", „Jerusalem", „1000 v. Chr."
@@ -135,9 +159,9 @@ export default function CommandPalette({ open, onClose }: CommandPaletteProps) {
             )}
           </div>
 
-          <div className="flex items-center gap-3 border-t border-line px-3.5 py-1.5 text-[10px] text-ink-subtle">
-            <span>↑ ↓ wählen</span>
-            <span>↵ öffnen</span>
+          <div className="flex shrink-0 items-center gap-3 border-t border-line px-3.5 py-2 text-[10px] text-ink-subtle pb-safe">
+            <span className="hidden sm:inline">↑ ↓ wählen</span>
+            <span className="hidden sm:inline">↵ öffnen</span>
             <button
               type="button"
               onClick={() => {

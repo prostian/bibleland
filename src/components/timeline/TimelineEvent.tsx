@@ -51,7 +51,10 @@ function TimelineEvent({ item, selected, hovered, onSelect, onHover }: TimelineE
       aria-pressed={selected}
       title={`${event.title} — ${formatEventDate(event)} · ${eventRefLabel(event, { abbreviated: true })}`}
       className={cn(
-        'absolute grid place-items-center',
+        // `bl-tl-event` vergrößert am Finger nur die *Trefferfläche* über
+        // ein Pseudoelement — die Zeilenpackung bleibt unangetastet, weil
+        // größere Knöpfe schlicht weniger Ereignisse ins Bild ließen.
+        'bl-tl-event absolute grid place-items-center',
         'hover:z-20 focus-visible:z-30',
         selected && 'z-30',
       )}

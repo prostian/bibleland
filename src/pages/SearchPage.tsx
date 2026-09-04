@@ -51,7 +51,7 @@ export default function SearchPage() {
           onChange={(e) => setParams(e.target.value ? { q: e.target.value } : {}, { replace: true })}
           placeholder="Wonach suchst du?"
           aria-label="Suchbegriff"
-          className="min-w-0 flex-1 bg-transparent text-sm text-ink outline-none placeholder:text-ink-subtle"
+          className="min-w-0 flex-1 bg-transparent text-base text-ink outline-none placeholder:text-ink-subtle sm:text-sm"
         />
         {query ? (
           <span className="shrink-0 text-xs tabular-nums text-ink-subtle">
@@ -72,7 +72,7 @@ export default function SearchPage() {
                   <button
                     type="button"
                     onClick={() => setParams({ q: example })}
-                    className="rounded-full border border-line px-2.5 py-1 text-xs text-ink-muted transition-colors hover:bg-surface-2 hover:text-ink"
+                    className="rounded-full border border-line px-3 py-2 text-xs text-ink-muted transition-colors hover:bg-surface-2 hover:text-ink sm:px-2.5 sm:py-1"
                   >
                     {example}
                   </button>

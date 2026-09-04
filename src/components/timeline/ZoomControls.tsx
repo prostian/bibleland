@@ -14,7 +14,7 @@ interface ZoomControlsProps {
 }
 
 const buttonClass =
-  'grid size-6 place-items-center rounded-md border border-line text-ink-muted transition-colors hover:bg-surface-2 hover:text-ink disabled:opacity-40 disabled:hover:bg-transparent';
+  'tap grid size-8 place-items-center rounded-md border border-line text-ink-muted transition-colors hover:bg-surface-2 hover:text-ink disabled:opacity-40 disabled:hover:bg-transparent sm:size-6';
 
 export default function ZoomControls({
   range,
@@ -49,7 +49,7 @@ export default function ZoomControls({
       */}
       <label
         className={cn(
-          'flex cursor-pointer items-center gap-1.5 rounded-md border px-1.5 py-0.5 transition-colors',
+          'tap flex cursor-pointer items-center gap-1.5 rounded-md border px-2 py-1.5 transition-colors sm:py-0.5',
           linked ? 'border-accent bg-accent-soft text-accent' : 'border-line hover:bg-surface-2',
         )}
         title={
@@ -62,9 +62,12 @@ export default function ZoomControls({
           type="checkbox"
           checked={linked}
           onChange={(e) => setLinked(e.target.checked)}
-          className="size-3 accent-[var(--bl-accent)]"
+          className="size-4 accent-accent sm:size-3"
         />
-        Karte koppeln
+        {/* Auf dem schmalsten Bildschirm nur das Wort, das den Unterschied
+            macht — „koppeln" allein bleibt verständlich. */}
+        <span className="hidden xs:inline">Karte koppeln</span>
+        <span className="xs:hidden">koppeln</span>
       </label>
 
       <div className="flex items-center gap-1">

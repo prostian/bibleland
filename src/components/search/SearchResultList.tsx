@@ -50,7 +50,9 @@ export default function SearchResultList({
         onClick={onNavigate}
         data-result-index={index}
         className={cn(
-          'flex items-baseline gap-2.5 rounded-lg px-2.5 py-1.5 transition-colors',
+          // Am Finger höhere Zeilen — eine Trefferliste ist der Ort, an dem
+          // ein Fehlgriff am meisten kostet.
+          'flex items-baseline gap-2.5 rounded-lg px-2.5 py-2.5 transition-colors sm:py-1.5',
           index === activeIndex ? 'bg-accent-soft' : 'hover:bg-surface-2',
         )}
       >

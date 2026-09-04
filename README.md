@@ -127,17 +127,83 @@ unbrauchbar, deshalb zwei Alternativen, umschaltbar unten links auf der Karte:
 
 Die Kacheln sind die einzige Netzverbindung zur Laufzeit; alle Sachdaten liegen im Bundle.
 
+**Ortsnamen setzt die App selbst.** Ab Zoomstufe 9 — dort, wo das Clustering endet — steht
+der biblische Name aus `places.json` unter dem Pin, in lesbarer Größe und mit hellem Rand
+gegen den Kartengrund. Die Kacheln beschriften den *heutigen* Ort in der Schriftgröße einer
+Übersichtskarte; auf einer Bibelkarte sucht man „Kapernaum", nicht „Kfar Nahum".
+Aus demselben Grund ist `detectRetina` abgeschaltet: Die Option lädt auf hochauflösenden
+Bildschirmen die Kacheln der nächsthöheren Zoomstufe und zeigt sie auf halber Fläche —
+die Schrift wird dadurch halb so groß.
+
+---
+
+## Historische Grenzen
+
+Der Kartenhintergrund zeigt heutige Staaten, und die erklären an einer Bibelkarte nichts:
+„Israel" auf den Kacheln ist nicht das Nordreich Israel, und dass Paulus nach Galatien
+schreibt, wird vor einer Türkeikarte nicht verständlicher. Deshalb legt die App auf Wunsch
+das Gebietsbild der jeweiligen Zeit darüber — elf Kartenbilder von der Bronzezeit bis zu
+den römischen Provinzen, in `src/data/territories.json`.
+
+Umschaltbar unten links: **aus**, **automatisch** — folgt dem, was man gerade betrachtet
+(ausgewähltes Ereignis, sonst der Median der sichtbaren Ereignisse) — oder eine **fest
+eingestellte Epoche**, um beim Wandern durch den Zeitstrahl dasselbe Bild zu behalten.
+
+Zwei Dinge sind dabei Absicht:
+
+- **Die Umrisse sind schematisch, und man sieht es.** Antike Herrschaft endete an
+  Einflusszonen, nicht an Katasterlinien; für viele Grenzen ist der Verlauf umstritten.
+  Alle Ränder sind deshalb gestrichelt, tributpflichtige Gebiete (`einfluss`) zusätzlich
+  blasser. Die Ebene zeigt Größenverhältnisse und Nachbarschaften — mehr behauptet sie nicht.
+- **Die Epochen überlappen sich nicht.** Zu jedem Jahr gehört genau ein Kartenbild, sonst
+  müsste die Automatik raten. `validate-data.mjs` prüft das.
+
+---
+
+## Auf dem Handy
+
+Karte, Zeitstrahl und Detailbereich nebeneinander setzen einen breiten Bildschirm voraus. Auf
+375 Pixeln bliebe für jedes ein Streifen übrig, auf dem nichts zu erkennen ist. Deshalb ist die
+Oberfläche unterhalb von 768 Pixeln anders aufgebaut — nicht kleiner, sondern anders:
+
+- **Eine Ansicht zur Zeit.** Karte *oder* Zeitstrahl füllt den Bildschirm, umgeschaltet über die
+  untere Leiste. Beide bleiben dabei montiert und werden nur ausgeblendet: Leaflet verlöre sonst
+  bei jedem Wechsel Ausschnitt und Zoomstufe. `MapAutoResize` meldet ihm die neue Größe, sobald
+  die Karte wieder sichtbar ist.
+- **Bedienung unten.** Die Bereichsleiste sitzt im Daumenbereich; oben bleiben nur Name und Lupe.
+  Die Reiter der Kopfleiste erscheinen erst ab `md`, der Knopf für die Filterspalte ab `lg` —
+  dort, wo es diese Spalte überhaupt gibt.
+- **Details als Blatt von unten.** Es kommt zur Hälfte hoch, sodass der Ort auf der Karte
+  sichtbar bleibt, und lässt sich aufziehen oder wegwischen. Gezogen wird nur am Griff, damit der
+  Text darin scrollbar bleibt. Die Karte fliegt ihr Ziel entsprechend versetzt an, sonst läge der
+  Marker unter dem Blatt.
+- **Filter als Schublade** mit Wischgeste, Hintergrundklick und Escape.
+- **Trefferflächen ab 44 Pixeln** (`tap`-Utility, nur bei `pointer: coarse`) — der Wert, auf den
+  sich Apple und Google unabhängig voneinander festgelegt haben. Die Zeitstrahl-Marker wachsen
+  dabei nur unsichtbar über ein Pseudoelement: Ihre Trefferfläche bestimmt die Zeilenhöhe, größere
+  Knöpfe hießen also weniger sichtbare Ereignisse.
+- **Zwei Finger zoomen den Zeitstrahl.** Am Telefon gibt es kein Mausrad; ohne die Geste bliebe er
+  auf der Zoomstufe stehen, mit der er geöffnet wurde.
+- **`100dvh` statt `100%`,** dazu `env(safe-area-inset-*)`: Sonst verschwindet die unterste Zeile
+  hinter der ein- und ausfahrenden Browserleiste bzw. dem Home-Indikator.
+- **Eingabefelder 16 Pixel.** Bei kleinerer Schrift zoomt iOS beim Antippen in das Feld hinein und
+  lässt die Oberfläche verschoben stehen.
+
+Ab `md` bzw. `lg` ist die Ansicht unverändert die bisherige: Karte über Zeitstrahl mit Ziehgriff,
+Filter als feste Spalte, Details als Spalte rechts.
+
 ---
 
 ## Aufbau
 
 ```
 src/
-  data/          JSON — events, places, persons, journeys, periods, books, verses/
+  data/          JSON — events, places, persons, journeys, periods, books,
+                 territories (historische Grenzen), verses/
   types/         Datenmodell; data.d.ts typisiert die JSON-Dateien
   lib/           dataset · year · timelineScale · search · graph · verses
-                 markerIcons · tileStyles · labels
-  store/         useAtlasStore (Sync) · useThemeStore · useMapStyleStore
+                 markerIcons · tileStyles · territories · labels
+  store/         useAtlasStore (Sync) · useUiStore (Layout) · useThemeStore · useMapStyleStore
   components/    layout/ · map/ · timeline/ · detail/ · graph/ · search/ · filters/ · ui/
   pages/         Atlas · EventPanel · Person · Ort · Buch · Reise · Graph · Suche · Info
 scripts/

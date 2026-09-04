@@ -49,7 +49,9 @@ export default function ThemeToggle() {
           title={option.label}
           onClick={() => setMode(option.mode)}
           className={cn(
-            'grid size-6 place-items-center rounded-md transition-colors',
+            // Am Finger etwas größer: Drei Knöpfe mit je 24 px nebeneinander
+            // trifft man nicht zuverlässig.
+            'grid size-6 place-items-center rounded-md transition-colors max-md:size-8',
             mode === option.mode
               ? 'bg-surface-3 text-ink'
               : 'text-ink-subtle hover:text-ink-muted',

@@ -69,6 +69,22 @@
   --bl-map-graticule: rgb(0 0 0 / 0.06);
   --bl-tile-filter: none;
 
+  /* Historische Gebiete — acht Farben, die sich auch bei aneinander
+     grenzenden Flächen unterscheiden lassen. Bewusst getrennt von den
+     Abschnittsfarben: Ein Gebiet gehört zu keinem Bibelabschnitt, und eine
+     gemeinsame Palette würde eine Beziehung behaupten, die es nicht gibt. */
+  --bl-terr-0: #b45309;
+  --bl-terr-1: #0f766e;
+  --bl-terr-2: #6d28d9;
+  --bl-terr-3: #b91c1c;
+  --bl-terr-4: #1d4ed8;
+  --bl-terr-5: #4d7c0f;
+  --bl-terr-6: #a21caf;
+  --bl-terr-7: #0e7490;
+
+  /* Rand um Kartenbeschriftungen — sie stehen auf unruhigem Grund. */
+  --bl-label-halo: #ffffff;
+
   --bl-shadow-panel: 0 1px 2px rgb(0 0 0 / 0.04), 0 8px 24px -8px rgb(0 0 0 / 0.12);
   --bl-shadow-pop: 0 2px 4px rgb(0 0 0 / 0.06), 0 12px 32px -8px rgb(0 0 0 / 0.18);
 }
@@ -116,6 +132,19 @@
   --bl-node-reise: #e879f9;
 
   --bl-map-graticule: rgb(255 255 255 / 0.07);
+
+  /* Auf dunklem Grund brauchen die Gebietsfarben mehr Helligkeit. */
+  --bl-terr-0: #f59e0b;
+  --bl-terr-1: #2dd4bf;
+  --bl-terr-2: #a78bfa;
+  --bl-terr-3: #f87171;
+  --bl-terr-4: #60a5fa;
+  --bl-terr-5: #a3e635;
+  --bl-terr-6: #e879f9;
+  --bl-terr-7: #22d3ee;
+
+  --bl-label-halo: #101010;
+
   /* OSM-Kacheln sind hell. Ohne Filter blendet die Karte im Dark Mode. */
   --bl-tile-filter: invert(1) hue-rotate(180deg) brightness(0.92) contrast(0.88) saturate(0.7);
 
@@ -172,6 +201,16 @@
   --radius-card: 0.75rem;
 }
 
+/* Eine Bildschirmstufe unterhalb von `sm`. Zwischen 320 und 400 Pixeln —
+   iPhone SE gegen aktuelle Geräte — liegt genug Unterschied, um
+   Beschriftungen ein- statt auszublenden.
+
+   Bewusst in einem eigenen `@theme`-Block: Aus dem `inline`-Block darüber
+   leitet Tailwind keine Breakpoint-Varianten ab, `xs:` bliebe dort wirkungslos. */
+@theme {
+  --breakpoint-xs: 25rem;
+}
+
 /* ==========================================================================
    Basis
    ========================================================================== */
@@ -184,9 +223,23 @@
   html {
     -webkit-text-size-adjust: 100%;
     text-size-adjust: 100%;
+
+    /* Die App füllt genau eine Bildschirmhöhe und scrollt nie als Ganzes.
+       `100%` reicht dafür auf dem Handy nicht: Es meint den Layout-Viewport
+       *inklusive* der ein- und ausfahrenden Browserleiste, wodurch die
+       unterste Zeile — auf dem Atlas die Zeitstrahl-Bedienung — hinter der
+       Leiste verschwindet. `dvh` misst, was tatsächlich zu sehen ist. */
+    height: 100%;
+  }
+
+  @supports (height: 100dvh) {
+    html {
+      height: 100dvh;
+    }
   }
 
   body {
+    height: 100%;
     background-color: var(--bl-bg);
     color: var(--bl-text);
     font-family: var(--font-sans);
@@ -196,6 +249,9 @@
        untereinander stehen. */
     font-variant-numeric: tabular-nums;
     overscroll-behavior: none;
+    /* Kein grauer Kasten beim Antippen — Fokus und Aktivzustand zeigt die
+       App selbst, und zwar an allen Stellen gleich. */
+    -webkit-tap-highlight-color: transparent;
   }
 
   :focus-visible {
@@ -252,6 +308,42 @@
     background-color: var(--bl-text-subtle);
     background-clip: content-box;
   }
+}
+
+/* ==========================================================================
+   Touch
+
+   Zwei Regeln, die die Oberfläche auf dem Handy überhaupt erst bedienbar
+   machen — beide nur für grobe Zeigegeräte, damit die Maus-Oberfläche
+   kompakt bleibt.
+   ========================================================================== */
+
+/* Mindestgröße einer Schaltfläche am Finger. 44 px ist der Wert, auf den
+   sich Apple und Google unabhängig voneinander festgelegt haben; ein 24-px-
+   Knopf ist mit dem Daumen nicht zuverlässig zu treffen. Die Klasse wächst
+   nur die *Trefferfläche*, nicht das Bild darin. */
+@utility tap {
+  @media (pointer: coarse) {
+    min-width: 44px;
+    min-height: 44px;
+  }
+}
+
+/* Sichere Bereiche: Auf Geräten mit runden Ecken und Home-Indikator würde
+   die unterste Leiste sonst angeschnitten. */
+@utility pb-safe {
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+}
+
+/* Platz für die untere Bereichsleiste. Alles, was auf dem Handy über den
+   Inhalt gelegt wird — vor allem das Detailblatt — endet sonst unter ihr. */
+@utility pb-tabbar {
+  padding-bottom: calc(3.25rem + env(safe-area-inset-bottom, 0px));
+}
+
+@utility inset-safe-x {
+  padding-left: env(safe-area-inset-left, 0px);
+  padding-right: env(safe-area-inset-right, 0px);
 }
 
 /* Text mit griechischer bzw. hebräischer Schrift. Hebräisch braucht
@@ -314,6 +406,25 @@
   background-color: var(--bl-surface-2) !important;
 }
 
+/* Am Finger sind Leaflets Standardknöpfe zu klein — und die Popup-Zeilen
+   ebenso. Beides wächst nur auf Touchgeräten. */
+@media (pointer: coarse) {
+  .leaflet-bar a {
+    width: 40px !important;
+    height: 40px !important;
+    line-height: 40px !important;
+    font-size: 20px !important;
+  }
+
+  .bl-pop-row {
+    padding: 9px 8px;
+  }
+
+  .bl-pop-list {
+    max-height: 46vh;
+  }
+}
+
 .leaflet-popup-content-wrapper,
 .leaflet-popup-tip {
   background-color: var(--bl-surface) !important;
@@ -327,6 +438,37 @@
 }
 .leaflet-popup-close-button {
   color: var(--bl-text-subtle) !important;
+}
+
+/* Tooltips an Reise-Etappen und Gebieten. Leaflet zeichnet sie standardmäßig
+   hell — im Dunkelmodus stünde sonst heller Text auf hellem Grund. */
+.leaflet-tooltip {
+  background-color: var(--bl-surface) !important;
+  color: var(--bl-text) !important;
+  border: 1px solid var(--bl-border) !important;
+  box-shadow: var(--bl-shadow-panel) !important;
+  border-radius: 8px;
+  font-size: 11.5px;
+}
+.leaflet-tooltip-top::before {
+  border-top-color: var(--bl-border) !important;
+}
+.leaflet-tooltip-bottom::before {
+  border-bottom-color: var(--bl-border) !important;
+}
+.leaflet-tooltip-left::before {
+  border-left-color: var(--bl-border) !important;
+}
+.leaflet-tooltip-right::before {
+  border-right-color: var(--bl-border) !important;
+}
+
+/* Gebietstooltips tragen einen ganzen Satz — Leaflet setzt Tooltips sonst
+   auf eine einzige Zeile, egal wie lang. */
+.bl-terr-tip {
+  max-width: 15rem;
+  white-space: normal;
+  line-height: 1.4;
 }
 
 /* --------------------------------------------------------------------------
@@ -477,6 +619,73 @@
   display: block;
 }
 
+/* --------------------------------------------------------------------------
+   Kartenbeschriftungen
+
+   Die Icons sind 0×0 groß: Sie sollen nichts überdecken und nichts anklickbar
+   machen. Ihre Ausdehnung bekommen die Beschriftungen erst hier aus dem Text,
+   ausgerichtet an der Koordinate des Markers.
+
+   Der Rand („Halo") ist kein Zierrat: Ortsnamen stehen über Straßen, Küsten
+   und Schraffuren. Ohne ihn ist die Schrift auf halber Strecke unlesbar —
+   und genau das war der Anlass, sie überhaupt selbst zu setzen.
+   -------------------------------------------------------------------------- */
+
+.bl-place-label,
+.bl-terr-label {
+  background: transparent;
+  border: none;
+  pointer-events: none;
+}
+
+.bl-place-label > span,
+.bl-terr-label > span {
+  position: absolute;
+  white-space: nowrap;
+  pointer-events: none;
+  text-shadow:
+    0 1px 0 var(--bl-label-halo),
+    0 -1px 0 var(--bl-label-halo),
+    1px 0 0 var(--bl-label-halo),
+    -1px 0 0 var(--bl-label-halo),
+    0 0 4px var(--bl-label-halo),
+    0 0 7px var(--bl-label-halo);
+}
+
+/* Der Ortsname sitzt unter der Pinspitze, die auf der Koordinate steht. */
+.bl-place-label > span {
+  top: 5px;
+  left: 0;
+  transform: translateX(-50%);
+  font-size: 13px;
+  font-weight: 600;
+  line-height: 1.15;
+  color: var(--bl-text);
+}
+
+.bl-place-label > span[data-selected='true'] {
+  font-size: 14px;
+  color: var(--bl-accent);
+}
+
+/* Der Gebietsname steht mitten in der Fläche, gesperrt und in Versalien —
+   so ist er auch dann als Gebiet erkennbar, wenn Ortsnamen daneben stehen. */
+.bl-terr-label > span {
+  top: 0;
+  left: 0;
+  transform: translate(-50%, -50%);
+  font-size: 11.5px;
+  font-weight: 600;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+  color: var(--terr-color);
+}
+
+.bl-terr-label > span[data-vague='true'] {
+  font-weight: 500;
+  opacity: 0.75;
+}
+
 /* Nummerierte Etappe einer Reise. */
 .bl-leg {
   background: transparent;
@@ -514,6 +723,21 @@
 }
 .bl-cluster:hover > div {
   transform: scale(1.1);
+}
+
+/* Zeitstrahl-Marker am Finger.
+
+   Der sichtbare Punkt ist zehn Pixel groß, die Trefferfläche achtzehn — mit
+   der Maus genug, mit dem Daumen nicht. Größere Knöpfe sind hier aber keine
+   Lösung: Die Zeilenhöhe folgt der Trefferfläche, breitere Knöpfe hießen
+   also weniger sichtbare Ereignisse. Deshalb wächst nur eine unsichtbare
+   Fläche über den Knopf hinaus, und auch die nur am Touchgerät. */
+@media (pointer: coarse) {
+  .bl-tl-event::after {
+    content: '';
+    position: absolute;
+    inset: -7px -6px;
+  }
 }
 
 /* ==========================================================================

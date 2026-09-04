@@ -83,7 +83,7 @@ export default function GraphPage() {
                 onClick={() => setDepth(value)}
                 aria-pressed={depth === value}
                 className={cn(
-                  'size-6 rounded-md border text-[11px] tabular-nums transition-colors',
+                  'tap size-8 rounded-md border text-[11px] tabular-nums transition-colors lg:size-6',
                   depth === value
                     ? 'border-accent bg-accent-soft text-accent'
                     : 'border-line text-ink-muted hover:bg-surface-2',
@@ -107,11 +107,15 @@ export default function GraphPage() {
         ) : null}
       </header>
 
-      <div className="flex min-h-0 flex-1">
-        <div className="relative min-w-0 flex-1">
+      {/* Auf schmalen Bildschirmen stehen Netz und Liste untereinander statt
+          nebeneinander — die Liste ist auf dem Handy nicht nur die
+          barrierefreie Alternative, sondern der einzige Weg, einen Knoten
+          sicher zu treffen. */}
+      <div className="flex min-h-0 flex-1 flex-col lg:flex-row">
+        <div className="relative min-h-48 min-w-0 flex-1">
           <KnowledgeGraph graph={graph} centerId={centerId} onSelect={handleSelect} />
 
-          <ul className="pointer-events-none absolute right-3 top-3 flex flex-col gap-1 rounded-lg border border-line bg-overlay px-2.5 py-2 shadow-panel backdrop-blur-md">
+          <ul className="pointer-events-none absolute right-2 top-2 flex flex-col gap-1 rounded-lg border border-line bg-overlay px-2.5 py-2 shadow-panel backdrop-blur-md lg:right-3 lg:top-3">
             {NODE_TYPES.map((nodeType) => (
               <li key={nodeType} className="flex items-center gap-1.5 text-[11px] text-ink-muted">
                 <span
@@ -127,11 +131,11 @@ export default function GraphPage() {
 
         {/* Listenalternative: Das Canvas lässt sich nicht mit der Tastatur
             bedienen, dieselben Knoten sind hier aber alle erreichbar. */}
-        <aside className="hidden w-64 shrink-0 overflow-y-auto border-l border-line bg-surface scrollbar-slim lg:block">
-          <h2 className="border-b border-line px-3 py-2 text-[11px] font-semibold uppercase tracking-wide text-ink-subtle">
+        <aside className="flex h-2/5 shrink-0 flex-col overflow-hidden border-t border-line bg-surface lg:h-auto lg:w-64 lg:border-l lg:border-t-0">
+          <h2 className="shrink-0 border-b border-line px-3 py-2 text-[11px] font-semibold uppercase tracking-wide text-ink-subtle">
             Verbundene Knoten
           </h2>
-          <ul className="p-1.5">
+          <ul className="min-h-0 flex-1 overflow-y-auto overscroll-contain p-1.5 scrollbar-slim">
             {neighbours.slice(0, 120).map((node) => {
               const parts = splitNodeKey(node.id);
               if (!parts) return null;
@@ -139,7 +143,7 @@ export default function GraphPage() {
                 <li key={node.id}>
                   <Link
                     to={`/graph/${parts.type}/${parts.id}`}
-                    className="flex items-baseline gap-2 rounded-md px-2 py-1 text-xs transition-colors hover:bg-surface-2"
+                    className="flex items-baseline gap-2 rounded-md px-2 py-2 text-xs transition-colors hover:bg-surface-2 lg:py-1"
                   >
                     <span
                       className="size-1.5 shrink-0 translate-y-[-1px] rounded-full"

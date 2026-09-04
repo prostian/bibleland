@@ -4,10 +4,38 @@ import L from 'leaflet';
 
 import { getEvent, getJourney, getPlace, placeById } from '@/lib/dataset';
 import { useAtlasStore } from '@/store/useAtlasStore';
-import { usePrefersReducedMotion } from '@/hooks/useMediaQuery';
+import { useIsMobile, usePrefersReducedMotion } from '@/hooks/useMediaQuery';
 
 /** Zoomstufe, auf die beim Auswählen eines Ereignisses geflogen wird. */
 const FOCUS_ZOOM = 9;
+
+/**
+ * Wie weit der Kartenmittelpunkt auf dem Handy nach unten rückt.
+ *
+ * Dort liegt über der unteren Hälfte das Detailblatt. Flöge die Karte den
+ * Ort genau in die Mitte, verschwände der Marker darunter — man bekäme die
+ * Beschreibung eines Ortes zu sehen, den man nicht sieht. Der versetzte
+ * Mittelpunkt hebt ihn in die obere Hälfte.
+ */
+const MOBILE_FOCUS_SHIFT = 0.22;
+
+/**
+ * Ein Mittelpunkt, der das Ziel um einen Anteil der Kartenhöhe nach oben
+ * schiebt. Gerechnet wird in projizierten Pixeln, weil ein fester Gradwert
+ * je nach Zoomstufe mal ein Dorf und mal ein Land weit wäre.
+ */
+function shiftedCenter(
+  map: L.Map,
+  target: L.LatLngTuple,
+  zoom: number,
+  ratio: number,
+): L.LatLngTuple {
+  if (ratio === 0) return target;
+  const point = map.project(target, zoom);
+  const shifted = point.add(L.point(0, map.getSize().y * ratio));
+  const latLng = map.unproject(shifted, zoom);
+  return [latLng.lat, latLng.lng];
+}
 
 /**
  * Verbindet die Karte mit dem Auswahlzustand.
@@ -21,6 +49,7 @@ export default function MapController() {
   const selectedEventId = useAtlasStore((s) => s.selectedEventId);
   const activeJourneyId = useAtlasStore((s) => s.activeJourneyId);
   const reducedMotion = usePrefersReducedMotion();
+  const isMobile = useIsMobile();
 
   // Worauf zuletzt geflogen wurde. Ohne diese Sperre würde jeder Rerender —
   // etwa beim Filtern — die Karte erneut in Bewegung setzen und den Nutzer
@@ -37,10 +66,16 @@ export default function MapController() {
 
     lastTarget.current = key;
     const zoom = Math.max(map.getZoom(), FOCUS_ZOOM);
+    const center = shiftedCenter(
+      map,
+      [place.lat, place.lng],
+      zoom,
+      isMobile ? MOBILE_FOCUS_SHIFT : 0,
+    );
 
-    if (reducedMotion) map.setView([place.lat, place.lng], zoom);
-    else map.flyTo([place.lat, place.lng], zoom, { duration: 0.7, easeLinearity: 0.28 });
-  }, [selectedEventId, map, reducedMotion]);
+    if (reducedMotion) map.setView(center, zoom);
+    else map.flyTo(center, zoom, { duration: 0.7, easeLinearity: 0.28 });
+  }, [selectedEventId, map, reducedMotion, isMobile]);
 
   useEffect(() => {
     if (!activeJourneyId) return;
@@ -58,12 +93,15 @@ export default function MapController() {
     if (points.length < 2) return;
 
     lastTarget.current = key;
+    // Auf dem Handy ein knapperer Rand: 64 Pixel auf jeder Seite fräßen von
+    // einem 375 Pixel breiten Bild ein Drittel weg.
+    const pad: L.PointTuple = isMobile ? [24, 24] : [64, 64];
     map.fitBounds(L.latLngBounds(points), {
-      padding: [64, 64],
+      padding: pad,
       animate: !reducedMotion,
       duration: 0.7,
     });
-  }, [activeJourneyId, map, reducedMotion]);
+  }, [activeJourneyId, map, reducedMotion, isMobile]);
 
   return null;
 }

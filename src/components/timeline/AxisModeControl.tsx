@@ -55,7 +55,7 @@ export default function AxisModeControl() {
             title={hint}
             onClick={() => setAxisMode(mode)}
             className={cn(
-              'rounded px-2 py-0.5 text-[11px] transition-colors',
+              'tap rounded px-2.5 py-1.5 text-[11px] transition-colors sm:px-2 sm:py-0.5',
               axisMode === mode
                 ? 'bg-accent text-accent-contrast'
                 : 'text-ink-muted hover:text-ink',
@@ -66,6 +66,11 @@ export default function AxisModeControl() {
         ))}
       </div>
 
+      {/*
+        Die Schriftgröße des Auswahlfelds ist auf dem Handy bewusst 16 px:
+        iOS zoomt beim Antippen in jedes Feld mit kleinerer Schrift hinein
+        und lässt die Oberfläche danach verschoben stehen.
+      */}
       {axisMode === 'kapitel' ? (
         <select
           aria-label="Lesebereich"
@@ -77,7 +82,7 @@ export default function AxisModeControl() {
               setReadingScope({ kind: 'abschnitt', id } as ReadingScope);
             }
           }}
-          className="max-w-44 rounded-md border border-line bg-surface px-1.5 py-0.5 text-[11px] text-ink outline-none focus-visible:border-accent"
+          className="max-w-44 rounded-md border border-line bg-surface px-1.5 py-1.5 text-base text-ink outline-none focus-visible:border-accent sm:py-0.5 sm:text-[11px]"
         >
           <optgroup label="Abschnitt am Stück">
             {SECTIONS.map((section) => (

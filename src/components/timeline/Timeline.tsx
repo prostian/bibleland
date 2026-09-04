@@ -183,35 +183,90 @@ export default function Timeline({ onSelectEvent }: TimelineProps) {
   }, [scale, setRange, axis]);
 
   /* -------------------------------------------------------------- *
-   * Verschieben durch Ziehen
+   * Verschieben durch Ziehen, Zoomen durch Zwicken
+   *
+   * Beides läuft über dieselben Zeigerereignisse: Ein Finger verschiebt,
+   * zwei Finger zoomen. Am Mausrad gibt es kein Zwicken, am Telefon kein
+   * Rad — ohne die Zweifingergeste bliebe der Zeitstrahl dort auf der
+   * Zoomstufe stehen, mit der er geöffnet wurde.
    * -------------------------------------------------------------- */
   const dragState = useRef<{ pointerId: number; lastX: number } | null>(null);
+  /** Alle gerade aufliegenden Finger, nach Zeiger-Kennung. */
+  const pointers = useRef(new Map<number, number>());
+  /** Fingerabstand und Ankerwert beim letzten Zwick-Schritt. */
+  const pinch = useRef<{ distance: number; anchor: number } | null>(null);
 
   const onPointerDown = useCallback((e: React.PointerEvent<HTMLDivElement>) => {
     // Nur auf leerem Grund ziehen — sonst ließe sich kein Marker mehr klicken.
     if ((e.target as HTMLElement).closest('button')) return;
-    dragState.current = { pointerId: e.pointerId, lastX: e.clientX };
+    pointers.current.set(e.pointerId, e.clientX);
     e.currentTarget.setPointerCapture(e.pointerId);
+
+    if (pointers.current.size === 1) {
+      dragState.current = { pointerId: e.pointerId, lastX: e.clientX };
+    } else {
+      // Zweiter Finger: Das Verschieben endet, das Zwicken beginnt.
+      dragState.current = null;
+      pinch.current = null;
+    }
   }, []);
 
   const onPointerMove = useCallback(
     (e: React.PointerEvent<HTMLDivElement>) => {
+      if (!pointers.current.has(e.pointerId)) return;
+      pointers.current.set(e.pointerId, e.clientX);
+
+      const state = useAtlasStore.getState();
+      const current = state.axisMode === 'kapitel' ? state.chapterRange : state.viewRange;
+
+      /* Zwei Finger: zoomen. */
+      if (pointers.current.size >= 2) {
+        const [a, b] = [...pointers.current.values()];
+        if (a === undefined || b === undefined) return;
+        const distance = Math.abs(a - b);
+        if (distance < 1) return;
+
+        const rect = e.currentTarget.getBoundingClientRect();
+        const anchor = scale.xToValue((a + b) / 2 - rect.left);
+
+        const previous = pinch.current;
+        pinch.current = { distance, anchor };
+        if (!previous) return;
+
+        // Auseinanderziehen vergrößert den Maßstab, also verkleinert die
+        // sichtbare Spanne.
+        const factor = previous.distance / distance;
+        if (Number.isFinite(factor) && factor > 0) {
+          setRange(zoomRange(current, factor, anchor, axis));
+        }
+        return;
+      }
+
+      /* Ein Finger: verschieben. */
       const drag = dragState.current;
       if (!drag || drag.pointerId !== e.pointerId) return;
       const deltaPx = e.clientX - drag.lastX;
       if (deltaPx === 0) return;
       drag.lastX = e.clientX;
       // Nach links ziehen heißt vorwärts gehen.
-      const state = useAtlasStore.getState();
-      const current = state.axisMode === 'kapitel' ? state.chapterRange : state.viewRange;
       setRange(panRange(current, -deltaPx / scale.pixelsPerUnit, axis));
     },
-    [scale.pixelsPerUnit, setRange, axis],
+    [scale, setRange, axis],
   );
 
   const endDrag = useCallback((e: React.PointerEvent<HTMLDivElement>) => {
-    if (dragState.current?.pointerId !== e.pointerId) return;
-    dragState.current = null;
+    pointers.current.delete(e.pointerId);
+    if (pointers.current.size < 2) pinch.current = null;
+
+    // Bleibt ein Finger liegen, wird aus dem Zwicken wieder ein Verschieben.
+    if (pointers.current.size === 1) {
+      const [id] = [...pointers.current.keys()];
+      const x = id === undefined ? undefined : pointers.current.get(id);
+      if (id !== undefined && x !== undefined) dragState.current = { pointerId: id, lastX: x };
+    } else if (dragState.current?.pointerId === e.pointerId) {
+      dragState.current = null;
+    }
+
     if (e.currentTarget.hasPointerCapture(e.pointerId)) {
       e.currentTarget.releasePointerCapture(e.pointerId);
     }
@@ -263,8 +318,8 @@ export default function Timeline({ onSelectEvent }: TimelineProps) {
           role="application"
           aria-label={
             isReading
-              ? 'Lesestrahl nach Kapiteln — mit den Pfeiltasten verschieben, mit Plus und Minus zoomen'
-              : 'Zeitstrahl — mit den Pfeiltasten verschieben, mit Plus und Minus zoomen'
+              ? 'Lesestrahl nach Kapiteln — mit den Pfeiltasten verschieben, mit Plus und Minus zoomen, mit zwei Fingern zwicken'
+              : 'Zeitstrahl — mit den Pfeiltasten verschieben, mit Plus und Minus zoomen, mit zwei Fingern zwicken'
           }
           tabIndex={0}
           onPointerDown={onPointerDown}
@@ -313,14 +368,17 @@ export default function Timeline({ onSelectEvent }: TimelineProps) {
             Auswege — höher ziehen oder hineinzoomen — helfen tatsächlich.
           */}
           {hidden > 0 ? (
-            <p className="pointer-events-none absolute bottom-1 left-1/2 -translate-x-1/2 rounded-full border border-line bg-overlay px-2 py-0.5 text-[10px] text-ink-subtle backdrop-blur-sm">
-              {hidden} weitere passen nicht — Zeitstrahl höher ziehen oder hineinzoomen
+            <p className="pointer-events-none absolute bottom-1 left-1/2 max-w-[calc(100%-1rem)] -translate-x-1/2 truncate rounded-full border border-line bg-overlay px-2 py-0.5 text-[10px] text-ink-subtle backdrop-blur-sm">
+              {hidden} weitere passen nicht — hineinzoomen
             </p>
           ) : null}
         </div>
       </div>
 
-      <div className="flex shrink-0 items-center gap-3 border-t border-line px-3 py-1.5">
+      {/* Die Bedienzeile darf umbrechen: Auf einem Telefon stehen Ordnung,
+          Übersichtsleiste und Zoom untereinander statt gequetscht in einer
+          Reihe. */}
+      <div className="flex shrink-0 flex-wrap items-center gap-x-3 gap-y-1.5 border-t border-line px-2 py-1.5 pb-safe sm:px-3">
         <AxisModeControl />
         {isReading ? null : <TimelineMinimap />}
         <ZoomControls

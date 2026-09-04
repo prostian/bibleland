@@ -22,11 +22,11 @@ export default function PageContainer({
   children: ReactNode;
 }) {
   return (
-    <div className="h-full overflow-y-auto scrollbar-slim">
-      <div className="mx-auto max-w-3xl px-5 py-6 lg:px-8 lg:py-10">
+    <div className="h-full overflow-y-auto overscroll-contain scrollbar-slim">
+      <div className="mx-auto max-w-3xl px-4 py-5 sm:px-5 sm:py-6 lg:px-8 lg:py-10">
         <Link
           to="/"
-          className="mb-5 inline-flex items-center gap-1.5 text-xs text-ink-subtle transition-colors hover:text-ink"
+          className="tap mb-4 inline-flex items-center gap-1.5 py-1.5 text-xs text-ink-subtle transition-colors hover:text-ink sm:mb-5 sm:py-0"
         >
           <svg viewBox="0 0 16 16" className="size-3.5" fill="none" stroke="currentColor" strokeWidth="1.6">
             <path d="M9.5 3.5L5 8l4.5 4.5" strokeLinecap="round" strokeLinejoin="round" />
@@ -36,7 +36,7 @@ export default function PageContainer({
 
         <header className="mb-6">
           {eyebrow ? <div className="mb-2 flex flex-wrap gap-1.5">{eyebrow}</div> : null}
-          <h1 className="text-2xl font-semibold tracking-tight text-ink">{title}</h1>
+          <h1 className="text-xl font-semibold tracking-tight text-ink sm:text-2xl">{title}</h1>
           {subtitle ? <div className="mt-1.5 text-sm text-ink-muted">{subtitle}</div> : null}
           {aside ? <div className="mt-4">{aside}</div> : null}
         </header>
