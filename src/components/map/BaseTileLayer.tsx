@@ -14,6 +14,13 @@ import { useThemeStore } from '@/store/useThemeStore';
  * Der `key` erzwingt einen Neuaufbau beim Stilwechsel: Leaflet tauscht die
  * URL einer bestehenden Ebene sonst nicht sauber aus und behält alte
  * Kacheln im Zwischenspeicher.
+ *
+ * **Kein `detectRetina`.** Die Option lädt auf hochauflösenden Bildschirmen
+ * die Kacheln der *nächsthöheren* Zoomstufe und zeigt sie auf halber Fläche.
+ * Linien werden dadurch schärfer — die Ortsnamen aber halb so groß, und
+ * genau die will man auf einer Bibelkarte lesen können. Die Schärfe holt der
+ * neutrale Stil ohnehin über `{r}` (`@2x`-Kacheln) zurück, ohne die Schrift
+ * zu verkleinern.
  */
 export default function BaseTileLayer() {
   const style = useTileStyle();
@@ -26,7 +33,6 @@ export default function BaseTileLayer() {
       url={variant.url}
       attribution={style.attribution}
       maxZoom={variant.maxZoom}
-      detectRetina
     />
   );
 }

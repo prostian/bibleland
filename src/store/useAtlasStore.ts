@@ -20,6 +20,15 @@ import { scopeBounds, scopeRange, type ReadingScope } from '@/lib/readingPath';
 export interface Filters {
   /** Leer bedeutet „alle" — das erspart es, beim Start alle acht einzutragen. */
   sections: Section[];
+  /**
+   * Einzelne Bücher — die feinere Stufe unter dem Abschnittsfilter.
+   *
+   * Wie alle übrigen Filter engt auch dieser zusätzlich ein: Abschnitt *und*
+   * Buch müssen passen. Wer „Propheten" wählt und darin Jesaja anhakt, sieht
+   * Jesaja; wer „Propheten" wählt und Rut anhakt, sieht nichts — und die
+   * Null neben Rut in der Leiste zeigt das schon vor dem Klick.
+   */
+  bookIds: string[];
   eventTypes: EventType[];
   personIds: string[];
   journeyIds: string[];
@@ -30,6 +39,7 @@ export interface Filters {
 
 export const DEFAULT_FILTERS: Filters = {
   sections: [],
+  bookIds: [],
   eventTypes: [],
   personIds: [],
   journeyIds: [],
@@ -89,6 +99,7 @@ interface AtlasState {
   setViewRange: (range: YearRange) => void;
   setFilters: (patch: Partial<Filters>) => void;
   toggleSection: (section: Section) => void;
+  toggleBook: (bookId: string) => void;
   toggleEventType: (type: EventType) => void;
   togglePerson: (personId: string) => void;
   resetFilters: () => void;
@@ -166,6 +177,8 @@ export const useAtlasStore = create<AtlasState>((set, get) => ({
   setFilters: (patch) => set((s) => ({ filters: { ...s.filters, ...patch } })),
   toggleSection: (section) =>
     set((s) => ({ filters: { ...s.filters, sections: toggle(s.filters.sections, section) } })),
+  toggleBook: (bookId) =>
+    set((s) => ({ filters: { ...s.filters, bookIds: toggle(s.filters.bookIds, bookId) } })),
   toggleEventType: (type) =>
     set((s) => ({ filters: { ...s.filters, eventTypes: toggle(s.filters.eventTypes, type) } })),
   togglePerson: (personId) =>
@@ -182,6 +195,7 @@ export const useAtlasStore = create<AtlasState>((set, get) => ({
 export function hasActiveFilters(filters: Filters): boolean {
   return (
     filters.sections.length > 0 ||
+    filters.bookIds.length > 0 ||
     filters.eventTypes.length > 0 ||
     filters.personIds.length > 0 ||
     filters.journeyIds.length > 0 ||

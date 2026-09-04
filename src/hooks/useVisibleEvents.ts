@@ -22,6 +22,18 @@ function overlapsRange(event: BibleEvent, from: number, to: number): boolean {
   return end >= toContinuous(from) && start <= toContinuous(to);
 }
 
+/**
+ * Steht das Ereignis in einem der gewählten Bücher?
+ *
+ * Parallelstellen zählen mit: Die Speisung der Fünftausend steht in allen
+ * vier Evangelien — wer Johannes filtert, will sie sehen, auch wenn die
+ * Hauptstelle bei Markus liegt.
+ */
+export function matchesBooks(event: BibleEvent, bookIds: readonly string[]): boolean {
+  if (event.ref && bookIds.includes(event.ref.bookId)) return true;
+  return (event.parallelRefs ?? []).some((ref) => bookIds.includes(ref.bookId));
+}
+
 export function filterEvents(
   events: readonly BibleEvent[],
   filters: Filters,
@@ -51,6 +63,7 @@ export function filterEvents(
     if (filters.sections.length && (!event.section || !filters.sections.includes(event.section))) {
       return false;
     }
+    if (filters.bookIds.length && !matchesBooks(event, filters.bookIds)) return false;
     if (filters.eventTypes.length && !filters.eventTypes.includes(event.eventType)) return false;
     if (filters.personIds.length && !filters.personIds.some((id) => event.personIds.includes(id))) {
       return false;
@@ -98,6 +111,36 @@ export function useFilteredEvents(): BibleEvent[] {
 
   return useMemo(
     () => filterEvents(allEvents, filters, { journeyId: activeJourneyId, scopeEventIds }),
+    [filters, activeJourneyId, scopeEventIds],
+  );
+}
+
+/**
+ * Grundmenge für die Trefferzahlen in der Filterleiste.
+ *
+ * Wie `useFilteredEvents`, aber **ohne** Abschnitts- und Buchfilter: Die Zahl
+ * neben „Propheten" soll sagen, was ein Klick darauf bringt. Zöge man sie aus
+ * der bereits nach Abschnitten gefilterten Menge, stünde neben jedem nicht
+ * gewählten Abschnitt eine Null — und die Leiste könnte nur noch bestätigen,
+ * was man ohnehin schon ausgewählt hat.
+ */
+export function useEventsForCanonCounts(): BibleEvent[] {
+  const filters = useAtlasStore((s) => s.filters);
+  const activeJourneyId = useAtlasStore((s) => s.activeJourneyId);
+  const entries = useReadingEntries();
+
+  const scopeEventIds = useMemo(
+    () => (entries ? new Set(entries.map((entry) => entry.event.id)) : undefined),
+    [entries],
+  );
+
+  return useMemo(
+    () =>
+      filterEvents(
+        allEvents,
+        { ...filters, sections: [], bookIds: [] },
+        { journeyId: activeJourneyId, scopeEventIds },
+      ),
     [filters, activeJourneyId, scopeEventIds],
   );
 }
