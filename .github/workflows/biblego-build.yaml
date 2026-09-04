@@ -28,7 +28,7 @@ env:
 jobs:
 # Please do not rename this job
   build-project:
-    name: build bibleland
+    name: build biblego
     runs-on: ubuntu-latest
     steps:
       - name: checkout
@@ -65,5 +65,5 @@ jobs:
           branch-id: ${{ inputs.branch-id }}
           version: ${{ github.sha }}
           folder: ${{ env.DEPLOYMENT_FOLDER }}
-          config-file: .deploy-now/bibleland/config.yaml
+          config-file: .deploy-now/biblego/config.yaml
           action: upload
