@@ -1,7 +1,7 @@
 {
   "name": "bibleland",
   "private": true,
-  "version": "0.1.0",
+  "version": "0.1.1",
   "type": "module",
   "description": "Bibleland — Bibel-Atlas, Zeitstrahl und Knowledge Graph. Frontend-only, alle Daten lokal.",
   "scripts": {
