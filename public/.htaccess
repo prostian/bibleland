@@ -49,6 +49,30 @@
   </FilesMatch>
 </IfModule>
 
+# Nur die Produktionsadresse gehoert in Suchmaschinen.
+#
+# Seit es dev.biblego.info gibt, steht dieselbe Anwendung unter mehreren
+# Adressen — dazu kommen die Vorschau-URLs, die Deploy Now fuer
+# Staging-Deployments vergibt. Ohne diese Regel indiziert Google sie alle und
+# behandelt sie als doppelten Inhalt; im schlimmsten Fall steht dann der
+# Entwicklungsstand im Suchergebnis statt der fertigen Seite.
+#
+# Die Bedingung ist bewusst herum: indexierbar ist *nur* der exakte Host
+# biblego.info, alles andere bekommt noindex. Eine Positivliste kann keine
+# neue Vorschau-URL uebersehen. www.biblego.info braucht keine Ausnahme, es
+# leitet ohnehin mit 301 auf die Hauptadresse um.
+#
+# Die beiden IfModule sind ineinander geschachtelt, und das ist wichtig:
+# Fehlte mod_setenvif, waere IS_PROD nirgends gesetzt — die Regel wuerde dann
+# auch die Produktionsseite aus dem Index nehmen. So wird ohne das Modul gar
+# nichts gesetzt.
+<IfModule mod_setenvif.c>
+  <IfModule mod_headers.c>
+    SetEnvIf Host "^biblego\.info$" IS_PROD
+    Header always set X-Robots-Tag "noindex, nofollow" env=!IS_PROD
+  </IfModule>
+</IfModule>
+
 <IfModule mod_deflate.c>
   AddOutputFilterByType DEFLATE text/html text/css application/javascript application/json image/svg+xml
 </IfModule>
