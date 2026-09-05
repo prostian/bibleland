@@ -1,4 +1,7 @@
-import { datasetStats } from '@/lib/dataset';
+import { useMemo } from 'react';
+
+import { books, datasetStats, events, journeys, periods, persons, places } from '@/lib/dataset';
+import { computeGaps, SHORT_DESCRIPTION_CHARS } from '@/lib/gaps';
 import { bundleFor, usingLocalGerman } from '@/lib/verses';
 import PageContainer, { PageSection } from '@/components/layout/PageContainer';
 
@@ -21,6 +24,12 @@ function Row({ label, value }: { label: string; value: React.ReactNode }) {
 export default function AboutPage() {
   const german = bundleFor('de');
   const greek = bundleFor('grc');
+
+  const gaps = useMemo(
+    () => computeGaps({ books, periods, places, persons, events, journeys }),
+    [],
+  );
+  const unsicher = gaps.certainty.find((entry) => entry.certainty === 'niedrig');
 
   return (
     <PageContainer
@@ -113,6 +122,45 @@ export default function AboutPage() {
           Kartenkacheln von OpenStreetMap. Sie zeigen die heutige Welt — Staatsgrenzen und
           Ortsnamen der Gegenwart also, unter denen die antiken Orte verortet sind. Die App
           selbst kommt ohne Server aus; die Kacheln sind die einzige Verbindung nach außen.
+        </p>
+      </PageSection>
+
+      <PageSection title="Wo der Bestand dünn ist">
+        <p className="text-sm leading-relaxed text-ink-muted">
+          Diese Zahlen werden aus den Daten selbst errechnet, nicht gepflegt — sie können also
+          nicht veralten. Sie benennen, was fehlt:
+        </p>
+        <dl className="mt-3">
+          <Row
+            label="Bücher ohne Ereignis"
+            value={`${gaps.booksWithoutEvents.length} von ${gaps.totals.books} — überwiegend Briefe und Gesetzestexte, die keine Handlung erzählen`}
+          />
+          <Row
+            label="Orte ohne Ereignis"
+            value={`${gaps.placesWithoutEvents.length} von ${gaps.totals.places} — erfasst und verortet, aber an keine Erzählung angebunden`}
+          />
+          <Row
+            label="Personen ohne Beziehung"
+            value={`${gaps.personsWithoutRelations.length} von ${gaps.totals.persons} — sie stehen im Wissensnetz ohne Kante da`}
+          />
+          <Row
+            label="Kurze Beschreibungen"
+            value={`${gaps.shortDescriptions.places.length} Orte und ${gaps.shortDescriptions.persons.length} Personen unter ${SHORT_DESCRIPTION_CHARS} Zeichen`}
+          />
+          <Row
+            label="Schlüsselvers"
+            value={`${gaps.keyVerses.withKeyVerse} von ${gaps.keyVerses.biblical} biblischen Ereignissen tragen einen zitierten Vers`}
+          />
+          {unsicher ? (
+            <Row
+              label="Unsichere Datierung"
+              value={`${unsicher.count} Ereignisse (${unsicher.share.toFixed(1)} %) sind mit „niedrig" gekennzeichnet`}
+            />
+          ) : null}
+        </dl>
+        <p className="mt-3 text-xs leading-relaxed text-ink-subtle">
+          Den vollständigen Bericht mit allen Listen gibt{' '}
+          <code className="text-ink-muted">npm run gaps</code> aus.
         </p>
       </PageSection>
 

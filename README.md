@@ -208,6 +208,7 @@ src/
   pages/         Atlas · EventPanel · Person · Ort · Buch · Reise · Graph · Suche · Info
 scripts/
   validate-data.mjs   referentielle Integrität — läuft in `npm run check`
+  report-gaps.mjs     Lückenbericht: was fehlt, nicht was falsch ist
   fetch-verses.mjs    Verse beschaffen
 ```
 
@@ -231,9 +232,10 @@ Ein paar Entscheidungen, die beim Lesen sonst überraschen:
 ```bash
 npm run dev        # Entwicklungsserver
 npm run check      # TypeScript strict + Datenvalidierung
-npm test           # Vitest (89 Tests)
+npm test           # Vitest
 npm run build      # Produktionsbuild
 npm run validate   # nur die Datenprüfung
+npm run gaps       # Lückenbericht (--json für die Weiterverarbeitung)
 ```
 
 ---
@@ -241,6 +243,8 @@ npm run validate   # nur die Datenprüfung
 ## Grenzen
 
 Kein Ersatz für einen wissenschaftlichen Bibelatlas und keine vollständige Erfassung. Der
-Datensatz ist eine kuratierte Auswahl der großen Erzählbögen; 14 Bücher haben noch kein
-Ereignis. Wo etwas fehlt, heißt das nicht, dass dort nichts steht — nur, dass es hier nicht
-erfasst ist.
+Datensatz ist eine kuratierte Auswahl der großen Erzählbögen. Wo etwas fehlt, heißt das
+nicht, dass dort nichts steht — nur, dass es hier nicht erfasst ist. Welche Bücher, Orte und
+Personen das gerade betrifft, sagt `npm run gaps`; die Info-Seite der App zeigt dieselben
+Zahlen. Sie hier von Hand zu wiederholen hieße, sie beim nächsten Ereignis falsch stehen zu
+lassen.

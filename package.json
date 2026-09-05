@@ -10,6 +10,7 @@
     "preview": "vite preview",
     "typecheck": "tsc --noEmit",
     "validate": "node scripts/validate-data.mjs",
+    "gaps": "node scripts/report-gaps.mjs",
     "check": "npm run typecheck && npm run validate",
     "test": "vitest run",
     "test:watch": "vitest",
