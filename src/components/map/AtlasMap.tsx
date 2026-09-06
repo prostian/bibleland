@@ -73,8 +73,12 @@ export default function AtlasMap({ onSelectEvent }: AtlasMapProps) {
   /** Welches Gebietsbild liegt unter den Markern? `null` = keins. */
   const era: TerritoryEra | null = useMemo(() => {
     if (bordersMode === 'aus') return null;
-    if (bordersMode === 'fest') return eraById.get(bordersEraId) ?? null;
-    return eraAtYear(eraYear(events, selectedEventId, viewRange));
+    const auto = () => eraAtYear(eraYear(events, selectedEventId, viewRange));
+    // Eine festgehaltene, aber unbekannte Epoche kommt aus einem alten Link
+    // oder einer alten Merkeinstellung. Die automatische Wahl ist dann die
+    // richtige Antwort — eine leere Ebene sähe wie ein Fehler aus.
+    if (bordersMode === 'fest') return eraById.get(bordersEraId) ?? auto();
+    return auto();
   }, [bordersMode, bordersEraId, events, selectedEventId, viewRange]);
 
   /**

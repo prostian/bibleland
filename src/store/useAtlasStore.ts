@@ -63,7 +63,7 @@ export interface YearRange {
 export type AxisMode = 'zeit' | 'kapitel';
 
 /** Voreinstellung des Lesemodus: das erzählerisch dichteste Buch. */
-const DEFAULT_SCOPE: ReadingScope = { kind: 'buch', id: 'gen' };
+export const DEFAULT_READING_SCOPE: ReadingScope = { kind: 'buch', id: 'gen' };
 
 interface AtlasState {
   selectedEventId: string | null;
@@ -121,8 +121,8 @@ export const useAtlasStore = create<AtlasState>((set, get) => ({
   activeJourneyId: null,
 
   axisMode: 'zeit',
-  readingScope: DEFAULT_SCOPE,
-  chapterRange: scopeRange(DEFAULT_SCOPE),
+  readingScope: DEFAULT_READING_SCOPE,
+  chapterRange: scopeRange(DEFAULT_READING_SCOPE),
   timeStateBackup: null,
 
   setAxisMode: (mode) => {

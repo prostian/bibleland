@@ -1,5 +1,5 @@
 import { useCallback } from 'react';
-import { Outlet, useMatch, useNavigate } from 'react-router-dom';
+import { Outlet, useLocation, useMatch, useNavigate } from 'react-router-dom';
 import { AnimatePresence, motion } from 'motion/react';
 
 import AtlasMap from '@/components/map/AtlasMap';
@@ -7,6 +7,7 @@ import Timeline from '@/components/timeline/Timeline';
 import SplitHandle, { useTimelineHeight } from '@/components/layout/SplitHandle';
 import BottomSheet from '@/components/layout/BottomSheet';
 import { useIsMobile, usePrefersReducedMotion } from '@/hooks/useMediaQuery';
+import useUrlSync from '@/hooks/useUrlSync';
 import { useUiStore } from '@/store/useUiStore';
 import { cn } from '@/lib/cn';
 
@@ -29,18 +30,23 @@ import { cn } from '@/lib/cn';
  */
 export default function AtlasPage() {
   const navigate = useNavigate();
+  const { search } = useLocation();
   const isMobile = useIsMobile();
   const reducedMotion = usePrefersReducedMotion();
   const detailOpen = useMatch('/ereignis/:id') !== null;
   const [timelineHeight, setTimelineHeight] = useTimelineHeight();
   const atlasView = useUiStore((s) => s.atlasView);
 
+  useUrlSync();
+
+  // Die eingestellte Ansicht wird mitgenommen: Ohne `search` fiele sie beim
+  // Öffnen eines Ereignisses aus der Adresse und käme erst verzögert zurück.
   const handleSelectEvent = useCallback(
-    (eventId: string) => navigate(`/ereignis/${eventId}`),
-    [navigate],
+    (eventId: string) => navigate({ pathname: `/ereignis/${eventId}`, search }),
+    [navigate, search],
   );
 
-  const closeDetail = useCallback(() => navigate('/'), [navigate]);
+  const closeDetail = useCallback(() => navigate({ pathname: '/', search }), [navigate, search]);
 
   return (
     <div className="flex h-full min-w-0">
