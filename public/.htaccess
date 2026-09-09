@@ -44,9 +44,24 @@
   <FilesMatch "\.(js|css|woff2|png|svg|jpg|webp)$">
     Header set Cache-Control "public, max-age=31536000, immutable"
   </FilesMatch>
-  <FilesMatch "\.(html|json)$">
+  <FilesMatch "\.(html|json|webmanifest)$">
     Header set Cache-Control "no-cache"
   </FilesMatch>
+
+  # Der Service Worker ist die Ausnahme unter den .js-Dateien: Sein Name traegt
+  # keinen Hash, und er ist der Weg, ueber den eine neue Fassung ueberhaupt
+  # erst zum Nutzer kommt. Eingefroren wuerde er die alte Anwendung auf
+  # unbestimmte Zeit festhalten. Diese Regel steht *nach* dem FilesMatch, weil
+  # Apache die Abschnitte in Reihenfolge zusammenfuehrt — die spaetere gewinnt.
+  <Files "sw.js">
+    Header set Cache-Control "no-cache"
+  </Files>
+</IfModule>
+
+# Ohne diesen Typ liefert Apache das Manifest als text/plain aus, und Chrome
+# nimmt es dann nicht an — die App waere nicht installierbar.
+<IfModule mod_mime.c>
+  AddType application/manifest+json .webmanifest
 </IfModule>
 
 # Nur die Produktionsadresse gehoert in Suchmaschinen.

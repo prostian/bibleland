@@ -22,7 +22,7 @@ import { useThemeStore } from '@/store/useThemeStore';
  * neutrale Stil ohnehin über `{r}` (`@2x`-Kacheln) zurück, ohne die Schrift
  * zu verkleinern.
  */
-export default function BaseTileLayer() {
+export default function BaseTileLayer({ onTileError }: { onTileError?: () => void } = {}) {
   const style = useTileStyle();
   const theme = useThemeStore((s) => s.resolved);
   const { variant } = resolveTiles(style, theme);
@@ -33,6 +33,9 @@ export default function BaseTileLayer() {
       url={variant.url}
       attribution={style.attribution}
       maxZoom={variant.maxZoom}
+      // Nur der Atlas hört zu: Die kleinen Karten auf Orts- und Reiseseite
+      // hätten für einen Offline-Hinweis gar keinen Platz.
+      {...(onTileError ? { eventHandlers: { tileerror: onTileError } } : {})}
     />
   );
 }

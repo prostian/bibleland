@@ -16,3 +16,18 @@ createRoot(container).render(
     <RouterProvider router={router} />
   </StrictMode>,
 );
+
+/*
+ * Der Service Worker läuft nur im Produktionsbuild.
+ *
+ * In der Entwicklung ist er eine Quelle rätselhafter Fehler: Er liefert alte
+ * Dateien aus, während Vite gerade neue schickt, und man sucht den Fehler im
+ * Quelltext statt im Zwischenspeicher.
+ */
+if (import.meta.env.PROD && 'serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    void navigator.serviceWorker.register('/sw.js').catch(() => {
+      /* Kein HTTPS, abgeschaltet, privater Modus — dann eben ohne Offline. */
+    });
+  });
+}

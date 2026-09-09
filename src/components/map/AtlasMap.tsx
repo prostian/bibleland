@@ -1,4 +1,4 @@
-import { useCallback, useMemo } from 'react';
+import { useCallback, useMemo, useState } from 'react';
 import { MapContainer, ZoomControl } from 'react-leaflet';
 
 import type { BibleEvent, Place, TerritoryEra } from '@/types';
@@ -20,6 +20,7 @@ import MapLegend from '@/components/map/MapLegend';
 import MapStyleControl from '@/components/map/MapStyleControl';
 import PlaceLabels from '@/components/map/PlaceLabels';
 import { useIsTouch } from '@/hooks/useMediaQuery';
+import { useOnline } from '@/hooks/useOnline';
 import { cn } from '@/lib/cn';
 
 /** Ausgangsausschnitt: die Levante mit Ägypten und Mesopotamien am Rand. */
@@ -76,6 +77,10 @@ export default function AtlasMap({ onSelectEvent }: AtlasMapProps) {
   const axisMode = useAtlasStore((s) => s.axisMode);
   const readingScope = useAtlasStore((s) => s.readingScope);
   const viewRange = useAtlasStore((s) => s.viewRange);
+
+  const online = useOnline();
+  // Erst wenn tatsaechlich Kacheln fehlschlagen, ist der Hinweis begruendet.
+  const [tilesFailed, setTilesFailed] = useState(false);
 
   const bordersMode = useMapStyleStore((s) => s.bordersMode);
   const bordersEraId = useMapStyleStore((s) => s.bordersEraId);
@@ -165,7 +170,7 @@ export default function AtlasMap({ onSelectEvent }: AtlasMapProps) {
           node?.setAttribute('aria-label', MAP_LABEL);
         }}
       >
-        <BaseTileLayer />
+        <BaseTileLayer onTileError={() => setTilesFailed(true)} />
 
         {era ? <HistoricalBorders era={era} /> : null}
 
@@ -196,6 +201,16 @@ export default function AtlasMap({ onSelectEvent }: AtlasMapProps) {
       {/* Unten links in einer Spalte: Grenzen über Kartenhintergrund. Die
           Zoomknöpfe sitzen unten rechts, die Legende oben links. */}
       <div className="pointer-events-none absolute bottom-2 left-2 z-1000 flex w-44 flex-col items-start gap-1.5 sm:bottom-3 sm:left-3 sm:w-52">
+        {/*
+          Ohne Netz fehlen die Kacheln unbesuchter Gegenden — die Sachdaten
+          nicht. Eine graue Fläche ohne Erklärung sähe nach einem Defekt aus;
+          der Satz sagt, was fehlt und was weiterhin funktioniert.
+        */}
+        {!online && tilesFailed ? (
+          <p className="pointer-events-auto rounded-lg border border-line bg-overlay px-2 py-1.5 text-[10px] leading-snug text-ink-subtle shadow-panel backdrop-blur-md">
+            Kartenhintergrund offline nicht verfügbar. Orte, Zeitstrahl und Details bleiben da.
+          </p>
+        ) : null}
         <MapBordersControl activeEra={era} />
         <MapStyleControl />
       </div>
