@@ -29,6 +29,10 @@ interface UiState {
 
   searchOpen: boolean;
   setSearchOpen: (open: boolean) => void;
+
+  /** Die Kurzübersicht über Tastenkürzel — von der Kopfleiste und von `?`. */
+  helpOpen: boolean;
+  setHelpOpen: (open: boolean) => void;
 }
 
 /**
@@ -51,4 +55,7 @@ export const useUiStore = create<UiState>((set) => ({
 
   searchOpen: false,
   setSearchOpen: (open) => set({ searchOpen: open }),
+
+  helpOpen: false,
+  setHelpOpen: (open) => set({ helpOpen: open }),
 }));

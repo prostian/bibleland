@@ -6,6 +6,8 @@ import TopBar from '@/components/layout/TopBar';
 import MobileTabBar from '@/components/layout/MobileTabBar';
 import FilterPanel from '@/components/filters/FilterPanel';
 import CommandPalette from '@/components/search/CommandPalette';
+import IntroCard from '@/components/help/IntroCard';
+import ShortcutsDialog from '@/components/help/ShortcutsDialog';
 import { useIsTablet, usePrefersReducedMotion } from '@/hooks/useMediaQuery';
 import { useFilteredEvents } from '@/hooks/useVisibleEvents';
 import { useUiStore } from '@/store/useUiStore';
@@ -30,19 +32,35 @@ export default function AppShell() {
   const setSidebarOpen = useUiStore((s) => s.setSidebarOpen);
   const searchOpen = useUiStore((s) => s.searchOpen);
   const setSearchOpen = useUiStore((s) => s.setSearchOpen);
+  const helpOpen = useUiStore((s) => s.helpOpen);
+  const setHelpOpen = useUiStore((s) => s.setHelpOpen);
 
-  // Strg/Cmd + K öffnet die Suche von überall. Der Listener sitzt hier und
-  // nicht in der Palette selbst, damit er auch greift, wenn sie zu ist.
+  // Strg/Cmd + K öffnet die Suche von überall, `?` die Kurzübersicht. Die
+  // Listener sitzen hier und nicht in den Dialogen selbst, damit sie auch
+  // greifen, wenn diese zu sind.
   useEffect(() => {
     const onKeyDown = (e: KeyboardEvent) => {
       if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'k') {
         e.preventDefault();
         setSearchOpen(true);
+        return;
+      }
+
+      // In einem Eingabefeld ist `?` ein Fragezeichen und kein Kürzel.
+      const target = e.target as HTMLElement | null;
+      const typing =
+        target instanceof HTMLInputElement ||
+        target instanceof HTMLTextAreaElement ||
+        target?.isContentEditable === true;
+
+      if (e.key === '?' && !typing && !e.ctrlKey && !e.metaKey) {
+        e.preventDefault();
+        setHelpOpen(true);
       }
     };
     window.addEventListener('keydown', onKeyDown);
     return () => window.removeEventListener('keydown', onKeyDown);
-  }, [setSearchOpen]);
+  }, [setSearchOpen, setHelpOpen]);
 
   // Escape schließt die Schublade — dieselbe Taste wie bei Suche und
   // Detailblatt. Nur dort nötig, wo sie über dem Inhalt liegt: Die feste
@@ -193,6 +211,8 @@ export default function AppShell() {
       </AnimatePresence>
 
       <CommandPalette open={searchOpen} onClose={() => setSearchOpen(false)} />
+      {helpOpen ? <ShortcutsDialog onClose={() => setHelpOpen(false)} /> : null}
+      <IntroCard onShowShortcuts={() => setHelpOpen(true)} />
     </div>
   );
 }
