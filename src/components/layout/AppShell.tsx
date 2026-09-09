@@ -1,11 +1,12 @@
 import { useEffect } from 'react';
-import { NavLink, Outlet } from 'react-router-dom';
+import { NavLink, Outlet, useLocation } from 'react-router-dom';
 import { AnimatePresence, motion } from 'motion/react';
 
 import TopBar from '@/components/layout/TopBar';
 import MobileTabBar from '@/components/layout/MobileTabBar';
 import FilterPanel from '@/components/filters/FilterPanel';
 import CommandPalette from '@/components/search/CommandPalette';
+import ErrorBoundary from '@/components/layout/ErrorBoundary';
 import IntroCard from '@/components/help/IntroCard';
 import ShortcutsDialog from '@/components/help/ShortcutsDialog';
 import { useIsTablet, usePrefersReducedMotion } from '@/hooks/useMediaQuery';
@@ -27,6 +28,7 @@ export default function AppShell() {
   const isTablet = useIsTablet();
   const reducedMotion = usePrefersReducedMotion();
   const matchCount = useFilteredEvents().length;
+  const { pathname } = useLocation();
 
   const sidebarOpen = useUiStore((s) => s.sidebarOpen);
   const setSidebarOpen = useUiStore((s) => s.setSidebarOpen);
@@ -118,7 +120,9 @@ export default function AppShell() {
         </AnimatePresence>
 
         <main id="inhalt" tabIndex={-1} className="min-w-0 flex-1">
-          <Outlet />
+          <ErrorBoundary resetKey={pathname}>
+            <Outlet />
+          </ErrorBoundary>
         </main>
       </div>
 

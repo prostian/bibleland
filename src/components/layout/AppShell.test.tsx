@@ -1,5 +1,5 @@
 // @vitest-environment jsdom
-import { afterEach, beforeEach, describe, expect, it } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { cleanup, fireEvent, render, screen } from '@testing-library/react';
 import { RouterProvider, createMemoryRouter } from 'react-router-dom';
 
@@ -78,6 +78,42 @@ describe('AppShell', () => {
   });
 });
 
+describe('Fehlergrenze', () => {
+  beforeEach(() => {
+    localStorage.clear();
+    useUiStore.setState({ helpOpen: false, searchOpen: false });
+  });
+
+  afterEach(() => {
+    cleanup();
+  });
+
+  function renderBroken() {
+    function Kaputt(): never {
+      throw new Error('Bündel nicht angekommen');
+    }
+    const router = createMemoryRouter(
+      [{ path: '/', element: <AppShell />, children: [{ index: true, element: <Kaputt /> }] }],
+      { initialEntries: ['/'] },
+    );
+    return render(<RouterProvider router={router} />);
+  }
+
+  it('hält Kopfleiste und Navigation bedienbar, wenn eine Seite wirft', () => {
+    // React meldet den gefangenen Fehler zusätzlich auf der Konsole — im
+    // Testlauf ist das Rauschen, kein Befund.
+    const quiet = vi.spyOn(console, 'error').mockImplementation(() => {});
+    renderBroken();
+
+    expect(screen.getByText('Diese Seite konnte nicht geladen werden')).toBeDefined();
+    expect(screen.getByRole('button', { name: 'Suchen' })).toBeDefined();
+    expect(screen.getByRole('button', { name: 'Neu laden' })).toBeDefined();
+    expect(screen.getByRole('link', { name: 'Zurück zum Atlas' }).getAttribute('href')).toBe('/');
+
+    quiet.mockRestore();
+  });
+});
+
 describe('Kurzübersicht', () => {
   beforeEach(() => {
     localStorage.clear();
@@ -119,6 +155,14 @@ describe('Kurzübersicht', () => {
 
     expect(screen.queryByRole('dialog', { name: 'Kurzübersicht' })).toBeNull();
     expect(document.activeElement).toBe(opener);
+  });
+
+  it('öffnet die Suche mit Strg K', () => {
+    renderShell();
+    expect(useUiStore.getState().searchOpen).toBe(false);
+
+    fireEvent.keyDown(window, { key: 'k', ctrlKey: true });
+    expect(useUiStore.getState().searchOpen).toBe(true);
   });
 
   it('nennt nur Kürzel, die es auch gibt', () => {

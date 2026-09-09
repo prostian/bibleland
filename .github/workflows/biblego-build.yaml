@@ -39,21 +39,32 @@ jobs:
       - name: Node einrichten
         uses: actions/setup-node@v4
         with:
-          # Vite 8 verlangt Node ^20.19 oder >=22.12.
-          node-version: '22'
+          # Vite 8 verlangt Node ^20.19 oder >=22.12. Node 24, weil die
+          # Buildskripte reine TypeScript-Module aus src/lib importieren --
+          # Node entfernt die Typen dabei selbst, aber erst ab 22.18.
+          node-version: '24'
           cache: 'npm'
 
       - name: Abhaengigkeiten installieren
         run: npm ci
 
-      - name: Datenbestand pruefen
+      - name: Typen und Datenbestand pruefen
         # Bricht ab, wenn eine Ereignis-, Orts- oder Personenreferenz ins Leere
         # zeigt. Lieber hier scheitern als eine Seite mit weissen Flecken
         # ausliefern.
-        run: npm run validate
+        run: npm run check
+
+      - name: Tests
+        run: npm test
 
       - name: Bauen
         run: npm run build
+
+      - name: Groesse pruefen
+        # Nach dem Bauen, weil erst dann die Chunks existieren. Bricht ab,
+        # wenn ein Bundle sein Budget reisst -- unbemerkt waechst es sonst,
+        # bis die Seite im Mobilfunk nicht mehr laedt.
+        run: npm run size
 
 # Please do not touch the following action
       - name: Store deployment content

@@ -211,6 +211,7 @@ scripts/
   report-gaps.mjs     Lückenbericht: was fehlt, nicht was falsch ist
   prerender.mjs       eine HTML-Datei je Entität — läuft nach `vite build`
   build-sw.mjs        Version und Vorladeliste in den Service Worker
+  check-size.mjs      Bundle-Budget — bricht ab, wenn ein Chunk davonläuft
   fetch-verses.mjs    Verse beschaffen
 ```
 
@@ -238,6 +239,7 @@ npm test           # Vitest
 npm run build      # Produktionsbuild
 npm run validate   # nur die Datenprüfung
 npm run gaps       # Lückenbericht (--json für die Weiterverarbeitung)
+npm run size       # Bundle-Budget prüfen (nach dem Build)
 ```
 
 ---
