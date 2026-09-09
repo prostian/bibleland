@@ -324,6 +324,62 @@ ${page.body}
   return html;
 }
 
+/* ------------------------------------------------------------------ *
+ * Sitemap und robots.txt
+ *
+ * Ohne Sitemap müsste eine Suchmaschine jede der 750 Adressen über Links
+ * erraten — und die entstehen erst, wenn JavaScript läuft. Die vorgerenderten
+ * Dateien wären damit zwar da, aber unauffindbar.
+ * ------------------------------------------------------------------ */
+
+/** Startseite vor Ereignissen vor Personen und Orten — grob nach Substanz. */
+const PRIORITY = {
+  '': '1.0',
+  ereignis: '0.8',
+  person: '0.7',
+  ort: '0.7',
+  buch: '0.6',
+  reise: '0.6',
+};
+
+/** Die Seiten ohne eigene Entität — sie werden nicht vorgerendert. */
+const STATIC_PATHS = ['', 'graph', 'suche', 'info'];
+
+function writeSitemap(pages) {
+  const today = new Date().toISOString().slice(0, 10);
+  const seen = new Set();
+
+  const entries = [...STATIC_PATHS, ...pages.map((page) => page.path)]
+    .filter((path) => {
+      if (seen.has(path)) return false;
+      seen.add(path);
+      return true;
+    })
+    .map((path) => {
+      const priority = PRIORITY[path.split('/')[0]] ?? '0.5';
+      return `  <url>
+    <loc>${esc(`${SITE}/${path}`)}</loc>
+    <lastmod>${today}</lastmod>
+    <priority>${priority}</priority>
+  </url>`;
+    });
+
+  const xml = `<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+${entries.join('\n')}
+</urlset>
+`;
+  writeFileSync(join(distDir, 'sitemap.xml'), xml, 'utf8');
+
+  writeFileSync(
+    join(distDir, 'robots.txt'),
+    `User-agent: *\nAllow: /\n\nSitemap: ${SITE}/sitemap.xml\n`,
+    'utf8',
+  );
+
+  return entries.length;
+}
+
 /*
  * Kein `process.exit()` beim Abbruch: In einem Modul, das eine TypeScript-
  * Datei importiert, bricht Node unter Windows dabei mit einer libuv-Assertion
@@ -356,8 +412,11 @@ if (!existsSync(baseFile)) {
    * Build, eine gelöschte Entität ist danach schlicht nicht mehr da und läuft
    * wieder über die SPA-Weiterleitung in die NotFoundPage.
    */
+  const urls = writeSitemap(pages);
+
   console.log('');
   console.log(`  Vorgerendert: ${pages.length} Seiten in ${Date.now() - started} ms`);
+  console.log(`  sitemap.xml: ${urls} Adressen · robots.txt geschrieben`);
   console.log(
     `  ${events.length} Ereignisse · ${persons.length} Personen · ${places.length} Orte · ` +
       `${books.length} Bücher · ${journeys.length} Reisen`,
