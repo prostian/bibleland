@@ -6,6 +6,7 @@ import { eventsInBook, getBook, getPerson } from '@/lib/dataset';
 import { SECTION_LABEL, TESTAMENT_LABEL, sectionColorVar } from '@/lib/labels';
 import { formatYear } from '@/lib/year';
 import { bibleserverUrl } from '@/lib/verses';
+import useDocumentMeta from '@/hooks/useDocumentMeta';
 import PageContainer, { PageSection } from '@/components/layout/PageContainer';
 import EventList from '@/components/detail/EventList';
 import EntityChip from '@/components/detail/EntityChip';
@@ -32,6 +33,11 @@ export default function BookPage() {
     }
     return set;
   }, [events, book]);
+
+  useDocumentMeta({
+    title: book ? book.name : 'Buch nicht gefunden',
+    description: book?.description,
+  });
 
   if (!book) return <NotFoundPage what="Buch" id={id} />;
 

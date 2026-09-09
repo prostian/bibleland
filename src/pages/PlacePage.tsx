@@ -6,6 +6,7 @@ import { eventsAtPlace, getPlace, journeysAtPlace, personById } from '@/lib/data
 import { PLACE_TYPE_LABEL } from '@/lib/labels';
 import { certaintyLabel, formatYearRange } from '@/lib/year';
 import { placeIcon, dominantSection } from '@/lib/markerIcons';
+import useDocumentMeta from '@/hooks/useDocumentMeta';
 import BaseTileLayer from '@/components/map/BaseTileLayer';
 import PageContainer, { PageSection } from '@/components/layout/PageContainer';
 import EventList from '@/components/detail/EventList';
@@ -25,6 +26,11 @@ export default function PlacePage() {
     const ids = new Set(events.flatMap((e) => e.personIds));
     return [...ids].map((personId) => personById.get(personId)).filter((p) => p !== undefined);
   }, [events]);
+
+  useDocumentMeta({
+    title: place ? place.name : 'Ort nicht gefunden',
+    description: place?.description,
+  });
 
   if (!place) return <NotFoundPage what="Ort" id={id} />;
 

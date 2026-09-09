@@ -3,6 +3,7 @@ import { Link, useNavigate, useParams } from 'react-router-dom';
 
 import { getEvent } from '@/lib/dataset';
 import { centerOn } from '@/lib/timelineScale';
+import useDocumentMeta from '@/hooks/useDocumentMeta';
 import { useAtlasStore } from '@/store/useAtlasStore';
 import EventDetail from '@/components/detail/EventDetail';
 
@@ -36,6 +37,12 @@ export default function EventPanel() {
   }, [event, selectEvent, setViewRange]);
 
   useEffect(() => () => selectEvent(null), [selectEvent]);
+
+  useDocumentMeta({
+    title: event ? event.title : 'Ereignis nicht gefunden',
+    description: event?.description,
+    type: 'article',
+  });
 
   if (!event) {
     return (

@@ -3,6 +3,7 @@ import { useMemo } from 'react';
 import { books, datasetStats, events, journeys, periods, persons, places } from '@/lib/dataset';
 import { computeGaps, SHORT_DESCRIPTION_CHARS } from '@/lib/gaps';
 import { bundleFor, usingLocalGerman } from '@/lib/verses';
+import useDocumentMeta from '@/hooks/useDocumentMeta';
 import PageContainer, { PageSection } from '@/components/layout/PageContainer';
 
 function Row({ label, value }: { label: string; value: React.ReactNode }) {
@@ -30,6 +31,12 @@ export default function AboutPage() {
     [],
   );
   const unsicher = gaps.certainty.find((entry) => entry.certainty === 'niedrig');
+
+  useDocumentMeta({
+    title: 'Über die Daten',
+    description:
+      'Woher die Angaben in Bibleland stammen, welcher Chronologie sie folgen, wie verlässlich die Datierungen sind und wo der Bestand dünn ist.',
+  });
 
   return (
     <PageContainer

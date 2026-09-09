@@ -4,6 +4,7 @@ import { Link, useNavigate, useParams } from 'react-router-dom';
 import type { GraphNode, NodeType } from '@/types';
 import { buildGraph, egoGraph, hubs, nodeKey, splitNodeKey } from '@/lib/graph';
 import { EDGE_TYPE_LABEL, NODE_TYPE_LABEL, NODE_TYPE_PLURAL, entityPath } from '@/lib/labels';
+import useDocumentMeta from '@/hooks/useDocumentMeta';
 import KnowledgeGraph from '@/components/graph/KnowledgeGraph';
 import { cn } from '@/lib/cn';
 
@@ -76,6 +77,13 @@ export default function GraphPage() {
       .sort((a, b) => b.degree - a.degree)
       .map((node) => ({ node, relation: relationTo.get(node.id) }));
   }, [graph, centerId]);
+
+  useDocumentMeta({
+    title: centerNode ? `Wissensnetz um ${centerNode.label}` : 'Wissensnetz',
+    description: centerNode
+      ? `${centerNode.label} im Wissensnetz von Bibleland: ${graph.nodes.length - 1} verbundene Ereignisse, Personen, Orte, Bücher und Reisen.`
+      : 'Ereignisse, Personen, Orte, Bücher und Reisen der Bibel als Netz ihrer Verbindungen.',
+  });
 
   return (
     <div className="flex h-full min-w-0 flex-col">

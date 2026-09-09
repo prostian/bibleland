@@ -209,6 +209,7 @@ src/
 scripts/
   validate-data.mjs   referentielle Integrität — läuft in `npm run check`
   report-gaps.mjs     Lückenbericht: was fehlt, nicht was falsch ist
+  prerender.mjs       eine HTML-Datei je Entität — läuft nach `vite build`
   fetch-verses.mjs    Verse beschaffen
 ```
 

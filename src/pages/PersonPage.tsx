@@ -12,6 +12,7 @@ import {
 import { RELATION_LABEL } from '@/lib/labels';
 import { formatYear, formatYearRange } from '@/lib/year';
 import { bibleserverUrl } from '@/lib/verses';
+import useDocumentMeta from '@/hooks/useDocumentMeta';
 import PageContainer, { PageSection } from '@/components/layout/PageContainer';
 import EventList from '@/components/detail/EventList';
 import EntityChip from '@/components/detail/EntityChip';
@@ -53,6 +54,12 @@ export default function PersonPage() {
       relations: person.relations.filter((r) => r.type === type),
     })).filter((group) => group.relations.length > 0);
   }, [person]);
+
+  useDocumentMeta({
+    title: person ? person.name : 'Person nicht gefunden',
+    description: person?.description,
+    type: 'profile',
+  });
 
   if (!person) return <NotFoundPage what="Person" id={id} />;
 

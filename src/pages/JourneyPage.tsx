@@ -7,6 +7,7 @@ import { getEvent, getJourney, getPerson, placeById } from '@/lib/dataset';
 import { sectionColorVar } from '@/lib/labels';
 import { certaintyLabel, formatEventDate, formatYearRange } from '@/lib/year';
 import { useAtlasStore } from '@/store/useAtlasStore';
+import useDocumentMeta from '@/hooks/useDocumentMeta';
 import BaseTileLayer from '@/components/map/BaseTileLayer';
 import JourneyRoutes from '@/components/map/JourneyRoutes';
 import PageContainer, { PageSection } from '@/components/layout/PageContainer';
@@ -39,6 +40,12 @@ export default function JourneyPage() {
   // Beim Verlassen der Seite die Route wieder abwählen, damit der Atlas
   // nicht mit einer Linie zurückbleibt, die dort niemand angefordert hat.
   useEffect(() => () => setActiveJourney(null), [setActiveJourney]);
+
+  useDocumentMeta({
+    title: journey ? journey.title : 'Reise nicht gefunden',
+    description: journey?.description,
+    type: 'article',
+  });
 
   if (!journey) return <NotFoundPage what="Reise" id={id} />;
 

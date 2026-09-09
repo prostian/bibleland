@@ -2,6 +2,7 @@ import { useEffect, useMemo, useRef } from 'react';
 import { useSearchParams } from 'react-router-dom';
 
 import { search } from '@/lib/search';
+import useDocumentMeta from '@/hooks/useDocumentMeta';
 import PageContainer from '@/components/layout/PageContainer';
 import SearchResultList from '@/components/search/SearchResultList';
 
@@ -26,6 +27,12 @@ export default function SearchPage() {
   useEffect(() => {
     inputRef.current?.focus();
   }, []);
+
+  useDocumentMeta({
+    title: query ? `Suche: ${query}` : 'Suche',
+    description:
+      'Buch und Kapitel, Person, Ort, Jahreszahl oder Zeitraum — alles im selben Feld durchsuchen.',
+  });
 
   return (
     <PageContainer
