@@ -33,6 +33,7 @@ import TimelineEraBands from '@/components/timeline/TimelineEraBands';
 import ReadingBands from '@/components/timeline/ReadingBands';
 import TimelineEvent from '@/components/timeline/TimelineEvent';
 import HiddenEvents from '@/components/timeline/HiddenEvents';
+import WrittenTrack from '@/components/timeline/WrittenTrack';
 import ZoomControls from '@/components/timeline/ZoomControls';
 import TimelineMinimap from '@/components/timeline/TimelineMinimap';
 import AxisModeControl from '@/components/timeline/AxisModeControl';
@@ -46,6 +47,9 @@ const ERA_BAND_HEIGHT = 16;
 const AXIS_LABEL_TOP = ERA_BAND_HEIGHT + 2;
 const HEADER_HEIGHT = AXIS_LABEL_TOP + 15;
 const LANE_AREA_PADDING = 6;
+
+/** Höhe der Abfassungsspur, sofern sie eingeschaltet ist. */
+const WRITTEN_TRACK_HEIGHT = 14;
 
 interface TimelineProps {
   onSelectEvent: (eventId: string) => void;
@@ -104,8 +108,12 @@ export default function Timeline({ onSelectEvent }: TimelineProps) {
     [isReading, readingScope],
   );
 
+  // Nur auf der Jahresachse: Eine Abfassungszeit hat im Kapitelmodus keinen Ort.
+  const writtenTrack = useAtlasStore((s) => s.showWrittenTrack) && !isReading;
+  const laneTop = HEADER_HEIGHT + (writtenTrack ? WRITTEN_TRACK_HEIGHT : 0);
+
   const width = Math.max(size.width, 1);
-  const laneAreaHeight = Math.max(size.height - HEADER_HEIGHT - LANE_AREA_PADDING, LANE_HEIGHT);
+  const laneAreaHeight = Math.max(size.height - laneTop - LANE_AREA_PADDING, LANE_HEIGHT);
   const maxLanes = Math.max(1, Math.floor(laneAreaHeight / LANE_HEIGHT));
 
   const scale = useMemo(
@@ -412,6 +420,10 @@ export default function Timeline({ onSelectEvent }: TimelineProps) {
           )}
           <TimelineAxis ticks={ticks} scale={scale} labelTop={AXIS_LABEL_TOP} />
 
+          {writtenTrack ? (
+            <WrittenTrack scale={scale} top={HEADER_HEIGHT} height={WRITTEN_TRACK_HEIGHT} />
+          ) : null}
+
           {/* Über der Achse, damit die Marker die Klicks bekommen und nicht
               die darunterliegenden Gitterlinien. */}
           <div
@@ -427,7 +439,7 @@ export default function Timeline({ onSelectEvent }: TimelineProps) {
               if (id) setFocusedEventId(id);
             }}
             className="absolute inset-x-0 z-10"
-            style={{ top: `${HEADER_HEIGHT}px`, height: `${usedLanes * LANE_HEIGHT}px` }}
+            style={{ top: `${laneTop}px`, height: `${usedLanes * LANE_HEIGHT}px` }}
           >
             {visible.map((item) => (
               <TimelineEvent

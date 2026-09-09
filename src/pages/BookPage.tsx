@@ -2,9 +2,9 @@ import { useMemo } from 'react';
 
 import { useParams } from 'react-router-dom';
 
-import { eventsInBook, getBook, getPerson } from '@/lib/dataset';
+import { events as allEvents, eventsInBook, getBook, getPerson } from '@/lib/dataset';
 import { SECTION_LABEL, TESTAMENT_LABEL, sectionColorVar } from '@/lib/labels';
-import { formatYear } from '@/lib/year';
+import { formatYear, toContinuous } from '@/lib/year';
 import { bibleserverUrl } from '@/lib/verses';
 import useDocumentMeta from '@/hooks/useDocumentMeta';
 import PageContainer, { PageSection } from '@/components/layout/PageContainer';
@@ -12,6 +12,9 @@ import EventList from '@/components/detail/EventList';
 import EntityChip from '@/components/detail/EntityChip';
 import Badge from '@/components/ui/Badge';
 import NotFoundPage from '@/pages/NotFoundPage';
+
+/** Wie weit um die Abfassungszeit herum gesucht wird. */
+const WRITTEN_WINDOW_YEARS = 15;
 
 export default function BookPage() {
   const { id } = useParams<{ id: string }>();
@@ -38,6 +41,26 @@ export default function BookPage() {
     title: book ? book.name : 'Buch nicht gefunden',
     description: book?.description,
   });
+
+  /**
+   * Ereignisse aus der Abfassungszeit — nur für Bücher, die selbst keines
+   * tragen. Das Fenster ist bewusst weit: Die Datierungen der Briefe sind auf
+   * ein Jahrzehnt genau bestenfalls plausibel, nicht belegt.
+   */
+  const contemporaries = useMemo(() => {
+    if (events.length > 0 || book?.writtenYear === undefined) return [];
+    const written = toContinuous(book.writtenYear);
+    const distance = (year: number) => Math.abs(toContinuous(year) - written);
+
+    // Erst die nächstliegenden auswählen, dann wieder chronologisch ordnen:
+    // Ein einfacher Schnitt durchs Fenster brächte die frühesten statt der
+    // zeitnächsten — bei einem Fenster von 30 Jahren ein spürbarer Unterschied.
+    return allEvents
+      .filter((event) => distance(event.year) <= WRITTEN_WINDOW_YEARS)
+      .sort((a, b) => distance(a.year) - distance(b.year))
+      .slice(0, 12)
+      .sort((a, b) => toContinuous(a.year) - toContinuous(b.year));
+  }, [events, book]);
 
   if (!book) return <NotFoundPage what="Buch" id={id} />;
 
@@ -117,9 +140,26 @@ export default function BookPage() {
         </p>
       </PageSection>
 
-      <PageSection title="Ereignisse" count={events.length}>
-        <EventList events={events} emptyText="Zu diesem Buch ist noch kein Ereignis erfasst." />
-      </PageSection>
+      {/*
+        Bücher ohne Ereignis sind kein Versäumnis: Levitikus ist Gesetzestext,
+        die Briefe sind Briefe — sie erzählen keine Handlung. Statt einer
+        leeren Liste steht hier, was zur Zeit der Abfassung geschah. Epheser
+        wird verständlicher neben Paulus' römischer Gefangenschaft.
+      */}
+      {events.length === 0 && contemporaries.length > 0 ? (
+        <PageSection title="Was zur Zeit der Abfassung geschah" count={contemporaries.length}>
+          <p className="mb-2.5 text-xs leading-relaxed text-ink-subtle">
+            Dieses Buch erzählt keine Handlung an Orten — es hat deshalb kein eigenes Ereignis.
+            Diese hier fallen in die Jahre um {formatYear(book.writtenYear ?? 0)}, in denen es
+            nach gängiger Annahme verfasst wurde.
+          </p>
+          <EventList events={contemporaries} emptyText="" />
+        </PageSection>
+      ) : (
+        <PageSection title="Ereignisse" count={events.length}>
+          <EventList events={events} emptyText="Zu diesem Buch ist noch kein Ereignis erfasst." />
+        </PageSection>
+      )}
     </PageContainer>
   );
 }

@@ -1,6 +1,7 @@
 // @vitest-environment jsdom
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { cleanup, fireEvent, render, screen } from '@testing-library/react';
+import { MemoryRouter } from 'react-router-dom';
 
 import Timeline from '@/components/timeline/Timeline';
 import { DEFAULT_FILTERS, useAtlasStore } from '@/store/useAtlasStore';
@@ -12,6 +13,15 @@ import { MAX_YEAR, MIN_YEAR } from '@/lib/year';
  * Pfeiltasten den Fokus innerhalb der Reihe weitergeben — ohne dabei
  * zusätzlich den Ausschnitt zu verschieben.
  */
+
+/** Der Zeitstrahl haengt in der App immer im Router — die Buchspur verlinkt. */
+function renderTimeline(onSelectEvent: (id: string) => void = () => {}) {
+  return render(
+    <MemoryRouter>
+      <Timeline onSelectEvent={onSelectEvent} />
+    </MemoryRouter>,
+  );
+}
 
 /** Alle Ereignismarker in Dokumentreihenfolge. */
 function markers(): HTMLElement[] {
@@ -28,6 +38,7 @@ describe('Timeline', () => {
       filters: DEFAULT_FILTERS,
       viewRange: { from: MIN_YEAR, to: MAX_YEAR },
       selectedEventId: null,
+      showWrittenTrack: false,
       axisMode: 'zeit',
       activeJourneyId: null,
     });
@@ -38,19 +49,19 @@ describe('Timeline', () => {
   });
 
   it('rendert die Ereignisse als echte Knöpfe', () => {
-    render(<Timeline onSelectEvent={() => {}} />);
+    renderTimeline();
     const all = markers();
     expect(all.length).toBeGreaterThan(5);
     expect(all.every((node) => node.tagName === 'BUTTON')).toBe(true);
   });
 
   it('macht genau einen Marker mit dem Tabulator erreichbar', () => {
-    render(<Timeline onSelectEvent={() => {}} />);
+    renderTimeline();
     expect(tabbableMarkers()).toHaveLength(1);
   });
 
   it('wandert mit den Pfeiltasten zum nächsten und vorigen Ereignis', () => {
-    render(<Timeline onSelectEvent={() => {}} />);
+    renderTimeline();
     const first = tabbableMarkers()[0];
     expect(first).toBeDefined();
     first?.focus();
@@ -67,7 +78,7 @@ describe('Timeline', () => {
   });
 
   it('springt mit Ende und Pos1 an die Ränder der Reihe', () => {
-    render(<Timeline onSelectEvent={() => {}} />);
+    renderTimeline();
     const first = tabbableMarkers()[0];
     first?.focus();
 
@@ -82,7 +93,7 @@ describe('Timeline', () => {
   });
 
   it('verschiebt beim Wandern nicht zusätzlich den Ausschnitt', () => {
-    render(<Timeline onSelectEvent={() => {}} />);
+    renderTimeline();
     const before = useAtlasStore.getState().viewRange;
 
     const first = tabbableMarkers()[0];
@@ -93,7 +104,7 @@ describe('Timeline', () => {
   });
 
   it('gibt den Fokus mit Escape an den Zeitstrahl zurück', () => {
-    render(<Timeline onSelectEvent={() => {}} />);
+    renderTimeline();
     const first = tabbableMarkers()[0];
     first?.focus();
 
@@ -103,7 +114,7 @@ describe('Timeline', () => {
 
   it('wählt beim Klick auf einen Marker das Ereignis aus', () => {
     const onSelect = vi.fn();
-    render(<Timeline onSelectEvent={onSelect} />);
+    renderTimeline(onSelect);
     const first = markers()[0];
     expect(first).toBeDefined();
 
@@ -112,13 +123,13 @@ describe('Timeline', () => {
   });
 
   it('macht die Zahl der ausgelassenen Ereignisse zu einem Bedienelement', () => {
-    render(<Timeline onSelectEvent={() => {}} />);
+    renderTimeline();
     const counter = screen.getByRole('button', { name: /weitere Ereignisse anzeigen$/ });
     expect(counter.getAttribute('aria-expanded')).toBe('false');
   });
 
   it('zeigt hinter dem Zähler alle ausgelassenen Ereignisse, nicht die ersten fünf', () => {
-    render(<Timeline onSelectEvent={() => {}} />);
+    renderTimeline();
     const counter = screen.getByRole('button', { name: /weitere Ereignisse anzeigen$/ });
     const expected = Number(/^(\d+)/.exec(counter.getAttribute('aria-label') ?? '')?.[1]);
     expect(expected).toBeGreaterThan(0);
@@ -130,7 +141,7 @@ describe('Timeline', () => {
 
   it('wählt ein Ereignis aus der Liste wie einen Marker aus', () => {
     const onSelect = vi.fn();
-    render(<Timeline onSelectEvent={onSelect} />);
+    renderTimeline(onSelect);
     fireEvent.click(screen.getByRole('button', { name: /weitere Ereignisse anzeigen$/ }));
 
     const first = screen.getByRole('dialog').querySelector('li button');
@@ -142,7 +153,7 @@ describe('Timeline', () => {
   });
 
   it('schließt die Liste mit Escape und gibt den Fokus an den Zähler zurück', () => {
-    render(<Timeline onSelectEvent={() => {}} />);
+    renderTimeline();
     const counter = screen.getByRole('button', { name: /weitere Ereignisse anzeigen$/ });
     fireEvent.click(counter);
     expect(screen.getByRole('dialog')).toBeDefined();
@@ -152,8 +163,35 @@ describe('Timeline', () => {
     expect(document.activeElement).toBe(counter);
   });
 
+  it('zeigt die Abfassungsspur im Vorgabezustand nicht', () => {
+    renderTimeline();
+    expect(document.querySelectorAll('[data-book-id]')).toHaveLength(0);
+  });
+
+  it('legt eingeschaltet die Bücher in eine eigene Reihe', () => {
+    useAtlasStore.setState({ showWrittenTrack: true });
+    renderTimeline();
+
+    const track = screen.getByRole('toolbar', { name: /^Abfassungszeiten/ });
+    const books = [...track.querySelectorAll('[data-book-id]')];
+    expect(books.length).toBeGreaterThan(10);
+
+    // Eigene Reihe heißt: kein Buch steckt in der Ereignisleiste.
+    const events = screen.getByRole('toolbar', { name: /^Ereignisse/ });
+    expect(books.some((node) => events.contains(node))).toBe(false);
+
+    // Und wieder nur eine Tabulator-Station, nicht 49.
+    expect(books.filter((node) => node.getAttribute('tabindex') === '0')).toHaveLength(1);
+  });
+
+  it('lässt die Abfassungsspur im Kapitelmodus weg — dort hat sie keinen Ort', () => {
+    useAtlasStore.setState({ showWrittenTrack: true, axisMode: 'kapitel' });
+    renderTimeline();
+    expect(document.querySelectorAll('[data-book-id]')).toHaveLength(0);
+  });
+
   it('zoomt auf dem Strahl selbst mit Plus und Minus', () => {
-    render(<Timeline onSelectEvent={() => {}} />);
+    renderTimeline();
     const track = screen.getByRole('application');
     const span = (range: { from: number; to: number }) => range.to - range.from;
     const before = span(useAtlasStore.getState().viewRange);
@@ -163,7 +201,7 @@ describe('Timeline', () => {
   });
 
   it('verschiebt auf dem Strahl selbst mit den Pfeiltasten', () => {
-    render(<Timeline onSelectEvent={() => {}} />);
+    renderTimeline();
     const track = screen.getByRole('application');
     // Erst hineinzoomen: Über den gesamten Zeitraum gibt es nichts zu verschieben.
     fireEvent.keyDown(track, { key: '+' });

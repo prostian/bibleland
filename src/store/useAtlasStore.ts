@@ -76,6 +76,16 @@ interface AtlasState {
   linkMapToTimeline: boolean;
   activeJourneyId: string | null;
 
+  /**
+   * Liegt die Spur der Abfassungszeiten über dem Zeitstrahl?
+   *
+   * Voreingestellt aus, und das mit Absicht: Auf der Spur steht, wann ein
+   * Buch geschrieben wurde — nicht, wann etwas geschah. Beides gleichzeitig
+   * und ohne Nachfrage zu zeigen, verwischte genau den Unterschied, den die
+   * eigene Spur sichtbar machen soll.
+   */
+  showWrittenTrack: boolean;
+
   /* --- Lesemodus --------------------------------------------------- */
 
   axisMode: AxisMode;
@@ -104,6 +114,7 @@ interface AtlasState {
   togglePerson: (personId: string) => void;
   resetFilters: () => void;
   setLinkMapToTimeline: (linked: boolean) => void;
+  setShowWrittenTrack: (show: boolean) => void;
   setActiveJourney: (id: string | null) => void;
 }
 
@@ -119,6 +130,7 @@ export const useAtlasStore = create<AtlasState>((set, get) => ({
   filters: DEFAULT_FILTERS,
   linkMapToTimeline: false,
   activeJourneyId: null,
+  showWrittenTrack: false,
 
   axisMode: 'zeit',
   readingScope: DEFAULT_READING_SCOPE,
@@ -187,6 +199,8 @@ export const useAtlasStore = create<AtlasState>((set, get) => ({
   resetFilters: () => set({ filters: DEFAULT_FILTERS, activeJourneyId: null }),
 
   setLinkMapToTimeline: (linked) => set({ linkMapToTimeline: linked }),
+
+  setShowWrittenTrack: (show) => set({ showWrittenTrack: show }),
 
   setActiveJourney: (id) => set({ activeJourneyId: id }),
 }));

@@ -133,8 +133,10 @@ describe('buildSegments', () => {
   });
 
   it('gibt bei einem Buch ohne Ereignisse nichts zurück', () => {
-    // 3. Mose erzählt keine Handlung an Orten.
-    expect(buildSegments({ kind: 'buch', id: 'lev' })).toEqual([]);
+    // Philemon ist ein Privatbrief: eine Bitte, keine Handlung an Orten.
+    // (Vorher stand hier 3. Mose — seit die Einsetzung Aarons erfasst ist,
+    // erzählt auch das Gesetzbuch eine Szene am Sinai.)
+    expect(buildSegments({ kind: 'buch', id: 'phlm' })).toEqual([]);
   });
 
   it('läuft auch über einen ganzen Abschnitt durch', () => {

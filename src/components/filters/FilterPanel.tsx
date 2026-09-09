@@ -181,6 +181,8 @@ export default function FilterPanel() {
   const resetFilters = useAtlasStore((s) => s.resetFilters);
   const activeJourneyId = useAtlasStore((s) => s.activeJourneyId);
   const setActiveJourney = useAtlasStore((s) => s.setActiveJourney);
+  const showWrittenTrack = useAtlasStore((s) => s.showWrittenTrack);
+  const setShowWrittenTrack = useAtlasStore((s) => s.setShowWrittenTrack);
   const setViewRange = useAtlasStore((s) => s.setViewRange);
 
   const visible = useFilteredEvents();
@@ -245,6 +247,31 @@ export default function FilterPanel() {
             />
           ))}
         </ul>
+      </Group>
+
+      <Group title="Abfassungszeiten" defaultOpen={false}>
+        {/*
+          Kein Filter, sondern eine zweite Spur: Vierzehn Bücher erzählen
+          keine Handlung und haben deshalb kein Ereignis — wohl aber eine
+          geschätzte Abfassungszeit. Voreingestellt aus, damit „geschrieben"
+          und „geschehen" nicht ungefragt nebeneinanderstehen.
+        */}
+        <button
+          type="button"
+          onClick={() => setShowWrittenTrack(!showWrittenTrack)}
+          aria-pressed={showWrittenTrack}
+          className={chipClass(showWrittenTrack)}
+        >
+          <span
+            className="h-3 w-0.5 shrink-0 rounded-[1px] bg-ink-subtle"
+            aria-hidden="true"
+          />
+          <span className="min-w-0 flex-1 truncate">Auf dem Zeitstrahl zeigen</span>
+        </button>
+        <p className="mt-1.5 px-2 text-[11px] leading-snug text-ink-subtle sm:px-1.5">
+          Eine eigene Zeile über den Ereignissen: wann ein Buch verfasst wurde, nicht wann etwas
+          geschah. Nur auf der Jahresachse.
+        </p>
       </Group>
 
       <Group title="Art des Ereignisses" defaultOpen={false}>

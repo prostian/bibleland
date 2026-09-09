@@ -469,7 +469,13 @@ const usedPersons = new Set(events.flatMap((e) => e.personIds));
 for (const journey of journeys) for (const id of journey.personIds ?? []) usedPersons.add(id);
 const orphanPersons = [...personIds].filter((id) => !usedPersons.has(id));
 
-const usedBooks = new Set(events.filter((e) => e.ref).map((e) => e.ref.bookId));
+// Parallelstellen zaehlen mit: Die Buchseite zeigt sie, also darf ein Buch,
+// das nur als Parallele vorkommt, hier nicht als unerschlossen gelten.
+const usedBooks = new Set();
+for (const event of events) {
+  if (event.ref) usedBooks.add(event.ref.bookId);
+  for (const ref of event.parallelRefs ?? []) usedBooks.add(ref.bookId);
+}
 const booksWithoutEvents = books.filter((b) => !usedBooks.has(b.id));
 
 const ausserbiblisch = events.filter((e) => e.extrabiblical === true);
