@@ -3,7 +3,7 @@ import { Link, useNavigate, useParams } from 'react-router-dom';
 
 import type { GraphNode, NodeType } from '@/types';
 import { buildGraph, egoGraph, hubs, nodeKey, splitNodeKey } from '@/lib/graph';
-import { NODE_TYPE_LABEL, NODE_TYPE_PLURAL, entityPath } from '@/lib/labels';
+import { EDGE_TYPE_LABEL, NODE_TYPE_LABEL, NODE_TYPE_PLURAL, entityPath } from '@/lib/labels';
 import KnowledgeGraph from '@/components/graph/KnowledgeGraph';
 import { cn } from '@/lib/cn';
 
@@ -51,14 +51,31 @@ export default function GraphPage() {
     [navigate],
   );
 
-  /** Dieselben Knoten als Liste — die tastaturbedienbare Alternative zum Canvas. */
-  const neighbours = useMemo(
-    () =>
-      [...graph.nodes]
-        .filter((node) => node.id !== centerId)
-        .sort((a, b) => b.degree - a.degree),
-    [graph, centerId],
-  );
+  /**
+   * Dieselben Knoten als Liste — die tastaturbedienbare Alternative zum Canvas.
+   *
+   * Jeder Eintrag trägt die Beziehungsart zum Mittelpunkt mit sich. Im Netz
+   * steckt sie in der Linie; wer das Netz nicht sieht, hätte sonst eine
+   * Namensliste ohne Aussage darüber, was die Namen verbindet.
+   */
+  const neighbours = useMemo(() => {
+    const relationTo = new Map<string, string>();
+    if (centerId) {
+      for (const edge of graph.edges) {
+        const source = edge.source as string;
+        const target = edge.target as string;
+        const other = source === centerId ? target : target === centerId ? source : null;
+        if (other && !relationTo.has(other)) {
+          relationTo.set(other, edge.label ?? EDGE_TYPE_LABEL[edge.type]);
+        }
+      }
+    }
+
+    return [...graph.nodes]
+      .filter((node) => node.id !== centerId)
+      .sort((a, b) => b.degree - a.degree)
+      .map((node) => ({ node, relation: relationTo.get(node.id) }));
+  }, [graph, centerId]);
 
   return (
     <div className="flex h-full min-w-0 flex-col">
@@ -136,7 +153,7 @@ export default function GraphPage() {
             Verbundene Knoten
           </h2>
           <ul className="min-h-0 flex-1 overflow-y-auto overscroll-contain p-1.5 scrollbar-slim">
-            {neighbours.slice(0, 120).map((node) => {
+            {neighbours.slice(0, 120).map(({ node, relation }) => {
               const parts = splitNodeKey(node.id);
               if (!parts) return null;
               return (
@@ -146,12 +163,18 @@ export default function GraphPage() {
                     className="flex items-baseline gap-2 rounded-md px-2 py-2 text-xs transition-colors hover:bg-surface-2 lg:py-1"
                   >
                     <span
-                      className="size-1.5 shrink-0 translate-y-[-1px] rounded-full"
+                      className="size-1.5 shrink-0 -translate-y-px rounded-full"
                       style={{ backgroundColor: NODE_COLOR[node.type] }}
                       aria-hidden="true"
                     />
                     <span className="min-w-0 flex-1 truncate text-ink">{node.label}</span>
-                    <span className="shrink-0 tabular-nums text-ink-subtle">{node.degree}</span>
+                    <span className="sr-only">
+                      {NODE_TYPE_LABEL[node.type]}
+                      {relation ? `, ${relation}` : ''}, {node.degree} Verbindungen
+                    </span>
+                    <span className="shrink-0 tabular-nums text-ink-subtle" aria-hidden="true">
+                      {node.degree}
+                    </span>
                   </Link>
                 </li>
               );

@@ -1,4 +1,12 @@
-import type { EventType, NodeType, PlaceType, RelationType, Section, Testament } from '@/types';
+import type {
+  EdgeType,
+  EventType,
+  NodeType,
+  PlaceType,
+  RelationType,
+  Section,
+  Testament,
+} from '@/types';
 
 /**
  * Anzeigetexte. Alle Kennungen im Datenmodell sind maschinenlesbare Slugs;
@@ -114,6 +122,22 @@ export const NODE_TYPE_LABEL: Record<NodeType, string> = {
   ort: 'Ort',
   buch: 'Buch',
   reise: 'Reise',
+};
+
+/**
+ * Kantenarten in Worten.
+ *
+ * Gebraucht wird das, wo das Netz nicht zu sehen ist: In der Knotenliste
+ * neben dem Canvas ersetzt „nahm teil an" die Linie, die ein Screenreader
+ * nicht vorlesen kann.
+ */
+export const EDGE_TYPE_LABEL: Record<EdgeType, string> = {
+  nahm_teil_an: 'nahm teil an',
+  fand_statt_in: 'fand statt in',
+  beschrieben_in: 'beschrieben in',
+  etappe_von: 'Etappe von',
+  verwandt_mit: 'verwandt mit',
+  verknuepft_mit: 'verknüpft mit',
 };
 
 export const NODE_TYPE_PLURAL: Record<NodeType, string> = {

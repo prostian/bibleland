@@ -277,9 +277,29 @@ export default function KnowledgeGraph({ graph, centerId, onSelect }: KnowledgeG
     };
   }, [data, size, centerId, reducedMotion, onSelect]);
 
+  /*
+   * Was das Netz *ist*, nicht wie es aussieht. Ein `aria-label` wie
+   * „Wissensnetz" auf einem Canvas nennt nur die Überschrift und verschweigt
+   * den Inhalt; die Zahl der Verbindungen sagt wenigstens, wie viel hier
+   * steht — und der zweite Satz, wo es lesbar zu finden ist.
+   */
+  const centerLabel = graph.nodes.find((node) => node.id === centerId)?.label;
+  const description = centerLabel
+    ? `Wissensnetz um ${centerLabel}, ${graph.nodes.length - 1} verbundene Einträge`
+    : `Wissensnetz mit ${graph.nodes.length} Einträgen`;
+
   return (
     <div ref={containerRef} className="relative h-full w-full overflow-hidden">
-      <canvas ref={canvasRef} className="block cursor-grab touch-none" />
+      <canvas
+        ref={canvasRef}
+        role="img"
+        aria-label={description}
+        className="block cursor-grab touch-none"
+      />
+      <p className="sr-only">
+        Die Darstellung ist eine Zeichenfläche und lässt sich nicht mit der Tastatur bedienen.
+        Dieselben Einträge stehen unter „Verbundene Knoten" als Liste.
+      </p>
 
       {hovered ? (
         <div className="pointer-events-none absolute bottom-3 left-3 max-w-xs rounded-lg border border-line bg-overlay px-2.5 py-1.5 shadow-panel backdrop-blur-md">

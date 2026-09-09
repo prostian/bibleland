@@ -7,6 +7,7 @@ import MobileTabBar from '@/components/layout/MobileTabBar';
 import FilterPanel from '@/components/filters/FilterPanel';
 import CommandPalette from '@/components/search/CommandPalette';
 import { useIsTablet, usePrefersReducedMotion } from '@/hooks/useMediaQuery';
+import { useFilteredEvents } from '@/hooks/useVisibleEvents';
 import { useUiStore } from '@/store/useUiStore';
 
 /**
@@ -23,6 +24,7 @@ import { useUiStore } from '@/store/useUiStore';
 export default function AppShell() {
   const isTablet = useIsTablet();
   const reducedMotion = usePrefersReducedMotion();
+  const matchCount = useFilteredEvents().length;
 
   const sidebarOpen = useUiStore((s) => s.sidebarOpen);
   const setSidebarOpen = useUiStore((s) => s.setSidebarOpen);
@@ -63,6 +65,18 @@ export default function AppShell() {
 
   return (
     <div className="flex h-full flex-col bg-bg">
+      {/*
+        Erstes fokussierbares Element der Seite. Ohne ihn führt der Weg zum
+        Inhalt über die gesamte Kopfleiste und danach durch den Zeitstrahl —
+        bei dessen Markerdichte ist das mit der Tastatur eine Zumutung.
+      */}
+      <a
+        href="#inhalt"
+        className="sr-only rounded-lg border border-line bg-surface px-3 py-2 text-sm text-ink shadow-pop focus:not-sr-only focus:fixed focus:left-3 focus:top-3 focus:z-100"
+      >
+        Zum Inhalt springen
+      </a>
+
       <TopBar />
 
       <div className="relative flex min-h-0 flex-1">
@@ -85,10 +99,19 @@ export default function AppShell() {
           ) : null}
         </AnimatePresence>
 
-        <main className="min-w-0 flex-1">
+        <main id="inhalt" tabIndex={-1} className="min-w-0 flex-1">
           <Outlet />
         </main>
       </div>
+
+      {/*
+        Ein Filterklick ändert sonst nur das Bild. Wer nicht sieht, dass die
+        Karte leerer wird, erfährt ohne diese Ansage gar nichts — deshalb die
+        Trefferzahl, höflich und ohne Unterbrechung.
+      */}
+      <p role="status" aria-live="polite" className="sr-only">
+        {matchCount} Ereignisse
+      </p>
 
       <MobileTabBar />
 

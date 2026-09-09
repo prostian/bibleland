@@ -26,6 +26,16 @@ import { cn } from '@/lib/cn';
 const INITIAL_CENTER: [number, number] = [32.5, 35.5];
 const INITIAL_ZOOM = 6;
 
+/**
+ * Die Karte ist kein Bild, sondern ein Bedienelement: Leaflet macht den
+ * Container fokussierbar und verschiebt ihn mit den Pfeiltasten. Ohne
+ * Beschriftung kündigt ein Screenreader dort nichts an. Ein vorlesbarer Ersatz
+ * für die Fläche selbst ist das nicht — deshalb der Hinweis auf die beiden
+ * Wege, die zu denselben Orten führen.
+ */
+const MAP_LABEL =
+  'Karte der biblischen Welt — dieselben Orte sind über den Zeitstrahl und die Suche erreichbar';
+
 interface AtlasMapProps {
   onSelectEvent: (eventId: string) => void;
 }
@@ -147,6 +157,13 @@ export default function AtlasMap({ onSelectEvent }: AtlasMapProps) {
         scrollWheelZoom
         className={cn('h-full w-full', invertTiles && 'bl-invert-tiles')}
         worldCopyJump
+        ref={(map) => {
+          // Den Container erzeugt Leaflet selbst, und react-leaflet gibt keine
+          // DOM-Attribute an ihn durch — deshalb hier am fertigen Element.
+          const node = map?.getContainer();
+          node?.setAttribute('role', 'application');
+          node?.setAttribute('aria-label', MAP_LABEL);
+        }}
       >
         <BaseTileLayer />
 

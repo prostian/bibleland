@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useRef } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 
 import type { BibleEvent } from '@/types';
 import { periods } from '@/lib/dataset';
@@ -273,7 +273,78 @@ export default function Timeline({ onSelectEvent }: TimelineProps) {
   }, []);
 
   /* -------------------------------------------------------------- *
-   * Tastatur
+   * Tastatur: die Marker als *eine* Tabulator-Station
+   *
+   * Jeder Marker ist ein echter Button, und das soll er bleiben — nur wären
+   * das je nach Belegung über hundert Tabulatorschritte zwischen Zeitstrahl
+   * und allem, was danach kommt. Deshalb das Werkzeugleisten-Muster: genau
+   * ein Marker ist erreichbar, die Pfeiltasten wandern innerhalb der Reihe,
+   * Escape gibt den Fokus an den Zeitstrahl zurück.
+   * -------------------------------------------------------------- */
+  const lanesRef = useRef<HTMLDivElement>(null);
+  const [focusedEventId, setFocusedEventId] = useState<string | null>(null);
+
+  /** Die sichtbaren Marker in Leserichtung — die Packung ordnet nach Zeilen. */
+  const navIds = useMemo(
+    () => [...visible].sort((a, b) => a.x - b.x).map((item) => item.event.id),
+    [visible],
+  );
+
+  /**
+   * Der erreichbare Marker: der zuletzt fokussierte, sonst der ausgewählte,
+   * sonst der erste. Ohne diese Reihenfolge landete man nach jedem Filterklick
+   * wieder am Anfang der Reihe.
+   */
+  const rovingId = useMemo(() => {
+    if (focusedEventId && navIds.includes(focusedEventId)) return focusedEventId;
+    if (selectedEventId && navIds.includes(selectedEventId)) return selectedEventId;
+    return navIds[0] ?? null;
+  }, [focusedEventId, selectedEventId, navIds]);
+
+  const onLaneKeyDown = useCallback(
+    (e: React.KeyboardEvent<HTMLDivElement>) => {
+      if (e.key === 'Escape') {
+        e.preventDefault();
+        e.stopPropagation();
+        trackRef.current?.focus();
+        return;
+      }
+      if (navIds.length === 0) return;
+
+      const current = rovingId ? navIds.indexOf(rovingId) : -1;
+      let next: number;
+      switch (e.key) {
+        case 'ArrowRight':
+          next = Math.min(navIds.length - 1, current + 1);
+          break;
+        case 'ArrowLeft':
+          next = Math.max(0, current - 1);
+          break;
+        case 'Home':
+          next = 0;
+          break;
+        case 'End':
+          next = navIds.length - 1;
+          break;
+        default:
+          return;
+      }
+
+      e.preventDefault();
+      // Ohne das verschöbe der Zeitstrahl zusätzlich seinen Ausschnitt — die
+      // Pfeiltasten liegen dort auf dem Verschieben.
+      e.stopPropagation();
+
+      const id = navIds[next];
+      if (!id) return;
+      setFocusedEventId(id);
+      lanesRef.current?.querySelector<HTMLButtonElement>(`[data-event-id="${id}"]`)?.focus();
+    },
+    [navIds, rovingId],
+  );
+
+  /* -------------------------------------------------------------- *
+   * Tastatur auf dem Strahl selbst: verschieben und zoomen
    * -------------------------------------------------------------- */
   const onKeyDown = useCallback(
     (e: React.KeyboardEvent<HTMLDivElement>) => {
@@ -339,6 +410,17 @@ export default function Timeline({ onSelectEvent }: TimelineProps) {
           {/* Über der Achse, damit die Marker die Klicks bekommen und nicht
               die darunterliegenden Gitterlinien. */}
           <div
+            ref={lanesRef}
+            role="toolbar"
+            aria-orientation="horizontal"
+            aria-label="Ereignisse — mit den Pfeiltasten wechseln, mit Enter öffnen, mit Escape zurück zum Strahl"
+            onKeyDown={onLaneKeyDown}
+            onFocus={(e) => {
+              // Auch ein Mausklick setzt den erreichbaren Marker um, sonst
+              // führte der nächste Tabulatorschritt wieder an den Anfang.
+              const id = (e.target as HTMLElement).dataset['eventId'];
+              if (id) setFocusedEventId(id);
+            }}
             className="absolute inset-x-0 z-10"
             style={{ top: `${HEADER_HEIGHT}px`, height: `${usedLanes * LANE_HEIGHT}px` }}
           >
@@ -348,6 +430,7 @@ export default function Timeline({ onSelectEvent }: TimelineProps) {
                 item={item}
                 selected={item.event.id === selectedEventId}
                 hovered={item.event.id === hoveredEntityId}
+                tabbable={item.event.id === rovingId}
                 onSelect={onSelectEvent}
                 onHover={hoverEntity}
               />

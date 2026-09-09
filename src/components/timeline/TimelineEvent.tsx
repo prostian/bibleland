@@ -15,6 +15,8 @@ interface TimelineEventProps {
   item: PackedEvent;
   selected: boolean;
   hovered: boolean;
+  /** Genau ein Marker der Zeile ist mit Tabulator erreichbar — siehe `Timeline`. */
+  tabbable: boolean;
   onSelect: (eventId: string) => void;
   onHover: (eventId: string | null) => void;
 }
@@ -32,7 +34,7 @@ interface TimelineEventProps {
  * verschöbe sich beim Überfahren die Fläche unter dem Zeiger, und man klickt
  * ins Leere.
  */
-function TimelineEvent({ item, selected, hovered, onSelect, onHover }: TimelineEventProps) {
+function TimelineEvent({ item, selected, hovered, tabbable, onSelect, onHover }: TimelineEventProps) {
   const { event, x, width, lane } = item;
   const isSpan = width > MARKER_SIZE * 1.5;
   const color = eventColorVar(event);
@@ -43,6 +45,7 @@ function TimelineEvent({ item, selected, hovered, onSelect, onHover }: TimelineE
     <button
       type="button"
       data-event-id={event.id}
+      tabIndex={tabbable ? 0 : -1}
       onClick={() => onSelect(event.id)}
       onMouseEnter={() => onHover(event.id)}
       onMouseLeave={() => onHover(null)}

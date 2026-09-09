@@ -28,7 +28,11 @@ export default defineConfig({
     },
   },
   test: {
+    // Voreinstellung bleibt Node: Die Rechenkerne brauchen kein DOM, und jsdom
+    // hochzufahren kostet pro Datei mehr als deren Tests dauern. Wer ein DOM
+    // braucht, schreibt `// @vitest-environment jsdom` in die Testdatei.
     environment: 'node',
     include: ['src/**/*.test.ts', 'src/**/*.test.tsx'],
+    setupFiles: ['src/test/setup.ts'],
   },
 });

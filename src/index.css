@@ -370,7 +370,15 @@
 .leaflet-container {
   background-color: var(--bl-surface-2);
   font-family: var(--font-sans);
-  outline: none;
+}
+
+/* Leaflet macht den Container fokussierbar, damit er sich mit den Pfeiltasten
+   verschieben lässt. Der Fokusring muss deshalb sichtbar bleiben — er sitzt
+   nach innen, weil ein äußerer Ring an der Kartenkante abgeschnitten würde.
+   Bei reinen Mausklicks greift die globale :focus:not(:focus-visible)-Regel. */
+.leaflet-container:focus-visible {
+  outline: 2px solid var(--bl-ring);
+  outline-offset: -2px;
 }
 
 /* Kacheln im Dunkelmodus umdrehen — aber nur bei Kartenstilen, für die es
