@@ -263,6 +263,33 @@ describe('packEvents', () => {
     expect(hiddenCount(packed)).toBe(95);
   });
 
+  it('lässt bei Platzmangel das leichter wiegende Ereignis weichen', () => {
+    // Alle am selben Punkt, nur eine Zeile: Es kann genau eines überleben.
+    const leicht = { ...ev('leicht', 1), certainty: 'niedrig' as const };
+    const schwer = {
+      ...ev('schwer', 1),
+      certainty: 'hoch' as const,
+      personIds: ['mose', 'aaron'],
+      relatedEventIds: ['a', 'b'],
+    };
+
+    // Das leichte kommt zuerst — nach reiner Reihenfolge würde es bleiben.
+    const packed = packEvents([leicht, schwer], scale, { maxLanes: 1 });
+
+    expect(packed.find((p) => p.event.id === 'schwer')?.lane).toBe(0);
+    expect(packed.find((p) => p.event.id === 'leicht')?.lane).toBe(-1);
+  });
+
+  it('verdrängt nicht, wenn der Blockierer mindestens so schwer wiegt', () => {
+    const schwer = { ...ev('schwer', 1), certainty: 'hoch' as const, personIds: ['mose'] };
+    const leicht = { ...ev('leicht', 1), certainty: 'niedrig' as const };
+
+    const packed = packEvents([schwer, leicht], scale, { maxLanes: 1 });
+
+    expect(packed.find((p) => p.event.id === 'schwer')?.lane).toBe(0);
+    expect(packed.find((p) => p.event.id === 'leicht')?.lane).toBe(-1);
+  });
+
   it('meldet nichts als verborgen, wenn alles Platz hat', () => {
     const packed = packEvents([ev('a', -100), ev('b', -50), ev('c', 50)], scale);
     expect(hiddenCount(packed)).toBe(0);

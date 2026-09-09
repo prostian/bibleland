@@ -32,6 +32,7 @@ import TimelineAxis from '@/components/timeline/TimelineAxis';
 import TimelineEraBands from '@/components/timeline/TimelineEraBands';
 import ReadingBands from '@/components/timeline/ReadingBands';
 import TimelineEvent from '@/components/timeline/TimelineEvent';
+import HiddenEvents from '@/components/timeline/HiddenEvents';
 import ZoomControls from '@/components/timeline/ZoomControls';
 import TimelineMinimap from '@/components/timeline/TimelineMinimap';
 import AxisModeControl from '@/components/timeline/AxisModeControl';
@@ -154,6 +155,10 @@ export default function Timeline({ onSelectEvent }: TimelineProps) {
   );
   const usedLanes = laneCount(packed);
   const hidden = hiddenCount(packed);
+  const hiddenItems = useMemo(() => packed.filter((item) => item.lane < 0), [packed]);
+
+  const [hiddenOpen, setHiddenOpen] = useState(false);
+  const hiddenButtonRef = useRef<HTMLButtonElement>(null);
 
   /* -------------------------------------------------------------- *
    * Zoomen mit dem Mausrad
@@ -446,16 +451,35 @@ export default function Timeline({ onSelectEvent }: TimelineProps) {
           ) : null}
 
           {/*
-            Ehrlicher Hinweis statt stummen Weglassens: Bei dichter Belegung
-            passen nicht alle Marker in die sichtbare Höhe. Beide genannten
-            Auswege — höher ziehen oder hineinzoomen — helfen tatsächlich.
+            Bei dichter Belegung passen nicht alle Marker in die sichtbare
+            Höhe. Die Zahl allein wäre eine Sackgasse — sie ist deshalb ein
+            Knopf, hinter dem die ausgelassenen Ereignisse stehen.
           */}
           {hidden > 0 ? (
-            <p className="pointer-events-none absolute bottom-1 left-1/2 max-w-[calc(100%-1rem)] -translate-x-1/2 truncate rounded-full border border-line bg-overlay px-2 py-0.5 text-[10px] text-ink-subtle backdrop-blur-sm">
-              {hidden} weitere passen nicht — hineinzoomen
-            </p>
+            <button
+              ref={hiddenButtonRef}
+              type="button"
+              onClick={() => setHiddenOpen((open) => !open)}
+              onKeyDown={(e) => e.stopPropagation()}
+              aria-expanded={hiddenOpen}
+              aria-label={`${hidden} weitere Ereignisse anzeigen`}
+              className="tap absolute bottom-1 left-1/2 z-20 max-w-[calc(100%-1rem)] -translate-x-1/2 truncate rounded-full border border-line bg-overlay px-2 py-0.5 text-[10px] text-ink-subtle backdrop-blur-sm transition-colors hover:bg-surface-2 hover:text-ink"
+            >
+              {hidden} weitere passen nicht — anzeigen
+            </button>
           ) : null}
         </div>
+
+        {hidden > 0 && hiddenOpen ? (
+          <HiddenEvents
+            items={hiddenItems}
+            onSelect={onSelectEvent}
+            onClose={() => {
+              setHiddenOpen(false);
+              hiddenButtonRef.current?.focus();
+            }}
+          />
+        ) : null}
       </div>
 
       {/* Die Bedienzeile darf umbrechen: Auf einem Telefon stehen Ordnung,

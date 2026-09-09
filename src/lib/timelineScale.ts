@@ -349,6 +349,21 @@ const YEAR_SPAN = (event: BibleEvent): EventSpan => ({
 });
 
 /**
+ * Wie schwer wiegt ein Ereignis, wenn nicht alle Platz haben?
+ *
+ * Gemessen wird an dem, was der Datenbestand über die Bedeutung hergibt: eine
+ * belastbare Datierung, viele beteiligte Personen, Verweise auf verwandte
+ * Ereignisse. Das ist keine Rangliste der Heilsgeschichte, sondern eine
+ * Notlösung für zu wenig Höhe — aber eine bessere als „wer zuerst kam".
+ */
+export function eventWeight(event: BibleEvent): number {
+  const certainty = event.certainty === 'hoch' ? 3 : event.certainty === 'mittel' ? 2 : 1;
+  const persons = Math.min((event.personIds ?? []).length, 4);
+  const related = Math.min((event.relatedEventIds ?? []).length, 4);
+  return certainty * 2 + persons + related;
+}
+
+/**
  * Verteilt Ereignisse so auf Zeilen, dass sich in einer Zeile nichts
  * überlappt.
  *
@@ -357,6 +372,12 @@ const YEAR_SPAN = (event: BibleEvent): EventSpan => ({
  * Packung, aber es hält die Ordnung von links nach rechts intakt und ist
  * stabil — dieselbe Eingabe ergibt immer dasselbe Bild, was beim Zoomen
  * wichtiger ist als ein paar gesparte Zeilen.
+ *
+ * Sind alle Zeilen belegt, entscheidet nicht mehr die Reihenfolge, sondern
+ * das Gewicht: Ein schwerer wiegendes Ereignis verdrängt das leichteste, das
+ * ihm im Weg steht — das verdrängte wandert in die Liste hinter dem Zähler.
+ * Ohne diese Regel bliebe die Kreuzigung weg, weil zufällig drei unsichere
+ * Ereignisse desselben Jahrzehnts zuerst dran waren.
  */
 export function packEvents(
   events: readonly BibleEvent[],
@@ -373,6 +394,9 @@ export function packEvents(
 
   // Rechte Kante der letzten Belegung je Zeile.
   const laneEnds: number[] = [];
+  // Was in einer Zeile liegt — nötig, um beim Verdrängen die vorige rechte
+  // Kante wiederherzustellen.
+  const laneItems: PackedEvent[][] = [];
   const packed: PackedEvent[] = [];
 
   for (const event of sorted) {
@@ -382,20 +406,49 @@ export function packEvents(
     const width = Math.max(markerWidth, spanEnd - x);
 
     let lane = laneEnds.findIndex((end) => x >= end + gap);
+
+    if (lane === -1 && laneEnds.length < maxLanes) {
+      lane = laneEnds.length;
+      laneEnds.push(0);
+      laneItems.push([]);
+    }
+
     if (lane === -1) {
-      if (laneEnds.length < maxLanes) {
-        lane = laneEnds.length;
-        laneEnds.push(0);
-      } else {
-        // Kein Platz mehr. Das Ereignis wird ausgelassen und gezählt statt
-        // in die unterste Zeile gestapelt.
+      // Alle Zeilen belegt: Das leichteste im Weg stehende Ereignis weicht,
+      // sofern das neue schwerer wiegt.
+      const weight = eventWeight(event);
+      let victimLane = -1;
+      let victimWeight = weight;
+
+      for (let i = 0; i < laneItems.length; i++) {
+        const blocker = laneItems[i]?.[laneItems[i]!.length - 1];
+        if (!blocker) continue;
+        const blockerWeight = eventWeight(blocker.event);
+        if (blockerWeight < victimWeight) {
+          victimLane = i;
+          victimWeight = blockerWeight;
+        }
+      }
+
+      if (victimLane === -1) {
+        // Alle Blockierer wiegen mindestens so schwer. Das Ereignis wird
+        // ausgelassen und gezählt statt in die unterste Zeile gestapelt.
         packed.push({ event, x, width, lane: -1 });
         continue;
       }
+
+      const bucket = laneItems[victimLane]!;
+      const victim = bucket.pop()!;
+      victim.lane = -1;
+      const previous = bucket[bucket.length - 1];
+      laneEnds[victimLane] = previous ? previous.x + previous.width : 0;
+      lane = victimLane;
     }
 
     laneEnds[lane] = x + width;
-    packed.push({ event, x, width, lane });
+    const item: PackedEvent = { event, x, width, lane };
+    laneItems[lane]!.push(item);
+    packed.push(item);
   }
 
   return packed;

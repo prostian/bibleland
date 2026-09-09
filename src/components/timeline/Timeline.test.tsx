@@ -111,6 +111,47 @@ describe('Timeline', () => {
     expect(onSelect).toHaveBeenCalledWith(first!.dataset['eventId']);
   });
 
+  it('macht die Zahl der ausgelassenen Ereignisse zu einem Bedienelement', () => {
+    render(<Timeline onSelectEvent={() => {}} />);
+    const counter = screen.getByRole('button', { name: /weitere Ereignisse anzeigen$/ });
+    expect(counter.getAttribute('aria-expanded')).toBe('false');
+  });
+
+  it('zeigt hinter dem Zähler alle ausgelassenen Ereignisse, nicht die ersten fünf', () => {
+    render(<Timeline onSelectEvent={() => {}} />);
+    const counter = screen.getByRole('button', { name: /weitere Ereignisse anzeigen$/ });
+    const expected = Number(/^(\d+)/.exec(counter.getAttribute('aria-label') ?? '')?.[1]);
+    expect(expected).toBeGreaterThan(0);
+
+    fireEvent.click(counter);
+    const dialog = screen.getByRole('dialog');
+    expect(dialog.querySelectorAll('li')).toHaveLength(expected);
+  });
+
+  it('wählt ein Ereignis aus der Liste wie einen Marker aus', () => {
+    const onSelect = vi.fn();
+    render(<Timeline onSelectEvent={onSelect} />);
+    fireEvent.click(screen.getByRole('button', { name: /weitere Ereignisse anzeigen$/ }));
+
+    const first = screen.getByRole('dialog').querySelector('li button');
+    fireEvent.click(first!);
+
+    expect(onSelect).toHaveBeenCalledTimes(1);
+    // Die Liste schließt sich dabei — sie hat ihren Zweck erfüllt.
+    expect(screen.queryByRole('dialog')).toBeNull();
+  });
+
+  it('schließt die Liste mit Escape und gibt den Fokus an den Zähler zurück', () => {
+    render(<Timeline onSelectEvent={() => {}} />);
+    const counter = screen.getByRole('button', { name: /weitere Ereignisse anzeigen$/ });
+    fireEvent.click(counter);
+    expect(screen.getByRole('dialog')).toBeDefined();
+
+    fireEvent.keyDown(document, { key: 'Escape' });
+    expect(screen.queryByRole('dialog')).toBeNull();
+    expect(document.activeElement).toBe(counter);
+  });
+
   it('zoomt auf dem Strahl selbst mit Plus und Minus', () => {
     render(<Timeline onSelectEvent={() => {}} />);
     const track = screen.getByRole('application');
