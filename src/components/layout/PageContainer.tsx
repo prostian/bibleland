@@ -1,6 +1,8 @@
 import type { ReactNode } from 'react';
 import { Link } from 'react-router-dom';
 
+import ShareButton from '@/components/ui/ShareButton';
+
 /**
  * Rahmen für alle Entitätsseiten außerhalb des Atlas.
  *
@@ -36,7 +38,14 @@ export default function PageContainer({
 
         <header className="mb-6">
           {eyebrow ? <div className="mb-2 flex flex-wrap gap-1.5">{eyebrow}</div> : null}
-          <h1 className="text-xl font-semibold tracking-tight text-ink sm:text-2xl">{title}</h1>
+          {/* Der Knopf steht neben der Überschrift, nicht darunter: Er gehört
+              zur Seite als Ganzes, nicht zu ihrem ersten Abschnitt. */}
+          <div className="flex items-start gap-3">
+            <h1 className="min-w-0 flex-1 text-xl font-semibold tracking-tight text-ink sm:text-2xl">
+              {title}
+            </h1>
+            <ShareButton title={title} className="mt-0.5" />
+          </div>
           {subtitle ? <div className="mt-1.5 text-sm text-ink-muted">{subtitle}</div> : null}
           {aside ? <div className="mt-4">{aside}</div> : null}
         </header>

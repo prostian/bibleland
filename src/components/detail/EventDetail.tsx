@@ -21,6 +21,7 @@ import { certaintyLabel, formatEventDate, formatYearRange } from '@/lib/year';
 import { verseKeyForEvent } from '@/lib/verses';
 import { useAtlasStore } from '@/store/useAtlasStore';
 import Badge from '@/components/ui/Badge';
+import ShareButton from '@/components/ui/ShareButton';
 import EntityChip from '@/components/detail/EntityChip';
 import VerseBox from '@/components/detail/VerseBox';
 
@@ -74,6 +75,7 @@ export default function EventDetail({ event }: EventDetailProps) {
             </Badge>
           )}
           <Badge variant="soft">{EVENT_TYPE_LABEL[event.eventType]}</Badge>
+          <ShareButton title={event.title} compact className="ml-auto" />
         </div>
 
         <h2 className="text-lg leading-snug font-semibold tracking-tight text-ink">

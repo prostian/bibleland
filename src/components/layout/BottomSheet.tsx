@@ -2,6 +2,7 @@ import { useCallback, useEffect, useRef, useState, type ReactNode } from 'react'
 import { motion, useDragControls, type PanInfo } from 'motion/react';
 
 import { usePrefersReducedMotion } from '@/hooks/useMediaQuery';
+import ShareButton from '@/components/ui/ShareButton';
 
 /**
  * Die Detailansicht auf dem Handy: ein Blatt, das von unten hereinfährt.
@@ -130,25 +131,31 @@ export default function BottomSheet({ onClose, children, label }: BottomSheetPro
           wischen. Er nimmt die volle Breite, damit man ihn nicht treffen
           muss — und tut aufs Antippen dasselbe wie aufs Ziehen, weil eine
           Geste ohne Klick-Entsprechung nicht bedienbar wäre. */}
-      <button
-        type="button"
-        onPointerDown={(e) => {
-          draggedRef.current = false;
-          dragControls.start(e);
-        }}
-        onClick={() => {
-          if (draggedRef.current) {
+      <div className="relative shrink-0">
+        <button
+          type="button"
+          onPointerDown={(e) => {
             draggedRef.current = false;
-            return;
-          }
-          setExpanded((v) => !v);
-        }}
-        aria-label={expanded ? 'Detailansicht verkleinern' : 'Detailansicht vergrößern'}
-        aria-expanded={expanded}
-        className="flex shrink-0 cursor-grab touch-none justify-center py-3 active:cursor-grabbing"
-      >
-        <span className="h-1 w-10 rounded-full bg-line-strong" aria-hidden="true" />
-      </button>
+            dragControls.start(e);
+          }}
+          onClick={() => {
+            if (draggedRef.current) {
+              draggedRef.current = false;
+              return;
+            }
+            setExpanded((v) => !v);
+          }}
+          aria-label={expanded ? 'Detailansicht verkleinern' : 'Detailansicht vergrößern'}
+          aria-expanded={expanded}
+          className="flex w-full cursor-grab touch-none justify-center py-3 active:cursor-grabbing"
+        >
+          <span className="h-1 w-10 rounded-full bg-line-strong" aria-hidden="true" />
+        </button>
+
+        {/* Danebengelegt statt hineingesetzt: Der Griff ist selbst ein Knopf,
+            und ein Knopf im Knopf wäre weder gültig noch bedienbar. */}
+        <ShareButton compact className="absolute right-2 top-1.5 border-transparent" />
+      </div>
 
       {/* Das Blatt schiebt sich unter die Bereichsleiste, statt sie zu
           verdecken: Wer im Detail steckt, soll ohne Umweg zurück zur Karte
