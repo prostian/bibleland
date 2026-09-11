@@ -48,6 +48,8 @@ export default function MapController() {
   const map = useMap();
   const selectedEventId = useAtlasStore((s) => s.selectedEventId);
   const activeJourneyId = useAtlasStore((s) => s.activeJourneyId);
+  const tourLeg = useAtlasStore((s) => s.tourLeg);
+  const setTourPlaying = useAtlasStore((s) => s.setTourPlaying);
   const reducedMotion = usePrefersReducedMotion();
   const isMobile = useIsMobile();
 
@@ -102,6 +104,53 @@ export default function MapController() {
       duration: 0.7,
     });
   }, [activeJourneyId, map, reducedMotion, isMobile]);
+
+  /*
+   * Die geführte Tour. Eigener Effekt neben den beiden oberen, weil sie eine
+   * andere Absicht hat: Hier soll die Karte auch dann mitgehen, wenn sich die
+   * Auswahl gar nicht ändert — etwa bei zwei aufeinanderfolgenden Etappen
+   * ohne Ereignis.
+   */
+  useEffect(() => {
+    if (tourLeg === null || !activeJourneyId) return;
+    const journey = getJourney(activeJourneyId);
+    const leg = journey?.legs.find((entry) => entry.order === tourLeg);
+    const place = leg ? placeById.get(leg.placeId) : undefined;
+    if (!place) return;
+
+    const zoom = Math.max(map.getZoom(), FOCUS_ZOOM);
+    const center = shiftedCenter(
+      map,
+      [place.lat, place.lng],
+      zoom,
+      isMobile ? MOBILE_FOCUS_SHIFT : 0,
+    );
+
+    // Die Sperre der beiden anderen Effekte mitführen: Sonst zöge das
+    // Ereignis der Etappe die Karte gleich ein zweites Mal.
+    lastTarget.current = `event:${leg?.eventId ?? ''}`;
+
+    if (reducedMotion) map.setView(center, zoom);
+    else map.flyTo(center, zoom, { duration: 0.7, easeLinearity: 0.28 });
+  }, [tourLeg, activeJourneyId, map, reducedMotion, isMobile]);
+
+  /*
+   * Übernimmt der Nutzer die Karte, hält die Tour an. Absichtlich am Ziehen
+   * und am Rad und *nicht* an `zoomstart`: Das feuert auch bei jedem eigenen
+   * Flug, und die Tour hielte sich damit selbst an.
+   */
+  useEffect(() => {
+    const pause = () => {
+      if (useAtlasStore.getState().tourPlaying) setTourPlaying(false);
+    };
+    map.on('dragstart', pause);
+    const container = map.getContainer();
+    container.addEventListener('wheel', pause, { passive: true });
+    return () => {
+      map.off('dragstart', pause);
+      container.removeEventListener('wheel', pause);
+    };
+  }, [map, setTourPlaying]);
 
   return null;
 }

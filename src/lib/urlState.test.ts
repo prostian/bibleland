@@ -16,6 +16,7 @@ const DEFAULTS: AtlasUrlState = {
   eventTypes: [],
   personIds: [],
   activeJourneyId: null,
+  tourLeg: null,
   years: { from: MIN_YEAR, to: MAX_YEAR },
   query: '',
   axisMode: 'zeit',
@@ -141,6 +142,28 @@ describe('decodeAtlasState', () => {
   });
 });
 
+describe('Etappe einer Tour', () => {
+  const decode = (search: string) => decodeAtlasState(new URLSearchParams(search));
+
+  it('schreibt die Etappe nur zusammen mit der Reise', () => {
+    expect(encode({ tourLeg: 5 })).toBe('');
+    expect(encode({ activeJourneyId: 'paulus-2', tourLeg: 5 })).toContain('e=5');
+  });
+
+  it('lässt die erste Etappe weg — sie ist der Anfang jeder Tour', () => {
+    expect(encode({ activeJourneyId: 'paulus-2', tourLeg: 1 })).toBe('j=paulus-2');
+  });
+
+  it('verwirft eine Etappe, die es in dieser Reise nicht gibt', () => {
+    expect(decode('j=paulus-2&e=999').tourLeg).toBeUndefined();
+    expect(decode('j=paulus-2&e=0').tourLeg).toBeUndefined();
+  });
+
+  it('verwirft eine Etappe ohne Reise', () => {
+    expect(decode('e=3')).toEqual({});
+  });
+});
+
 describe('Hin- und Rückweg', () => {
   it('erhält eine vollständig eingestellte Ansicht', () => {
     const state: AtlasUrlState = {
@@ -150,6 +173,7 @@ describe('Hin- und Rückweg', () => {
       eventTypes: ['schlacht'],
       personIds: ['paulus'],
       activeJourneyId: 'paulus-2',
+      tourLeg: 5,
       years: { from: -800, to: -700 },
       query: 'tempel',
       borders: { mode: 'fest', eraId: 'eisenzeit-2' },
@@ -163,6 +187,7 @@ describe('Hin- und Rückweg', () => {
     expect(back.eventTypes).toEqual(state.eventTypes);
     expect(back.personIds).toEqual(state.personIds);
     expect(back.activeJourneyId).toBe(state.activeJourneyId);
+    expect(back.tourLeg).toBe(state.tourLeg);
     expect(back.years).toEqual(state.years);
     expect(back.query).toBe(state.query);
     expect(back.borders).toEqual(state.borders);

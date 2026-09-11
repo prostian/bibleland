@@ -341,6 +341,12 @@
   padding-bottom: calc(3.25rem + env(safe-area-inset-bottom, 0px));
 }
 
+/* Dasselbe Maß als Abstand von unten — für Leisten, die über der Karte
+   schweben und die Bereichsleiste nicht verdecken dürfen. */
+@utility bottom-tabbar {
+  bottom: calc(3.75rem + env(safe-area-inset-bottom, 0px));
+}
+
 @utility inset-safe-x {
   padding-left: env(safe-area-inset-left, 0px);
   padding-right: env(safe-area-inset-right, 0px);

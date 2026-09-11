@@ -43,6 +43,14 @@ const KEYBOARD: Group[] = [
     ],
   },
   {
+    title: 'Geführte Tour einer Reise',
+    rows: [
+      { keys: ['←', '→'], text: 'Eine Etappe zurück und vor' },
+      { keys: ['Leertaste'], text: 'Abspielen und anhalten' },
+      { keys: ['Esc'], text: 'Tour beenden — die Route bleibt liegen' },
+    ],
+  },
+  {
     title: 'Offene Suche',
     rows: [
       { keys: ['↑', '↓'], text: 'Treffer wählen' },

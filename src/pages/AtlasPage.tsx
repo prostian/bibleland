@@ -1,4 +1,4 @@
-import { useCallback } from 'react';
+import { useCallback, useEffect } from 'react';
 import { Outlet, useLocation, useMatch, useNavigate } from 'react-router-dom';
 import { AnimatePresence, motion } from 'motion/react';
 
@@ -6,6 +6,9 @@ import AtlasMap from '@/components/map/AtlasMap';
 import Timeline from '@/components/timeline/Timeline';
 import SplitHandle, { useTimelineHeight } from '@/components/layout/SplitHandle';
 import BottomSheet from '@/components/layout/BottomSheet';
+import TourLegDetail from '@/components/detail/TourLegDetail';
+import { getJourney } from '@/lib/dataset';
+import { useAtlasStore } from '@/store/useAtlasStore';
 import { useIsMobile, usePrefersReducedMotion } from '@/hooks/useMediaQuery';
 import useUrlSync from '@/hooks/useUrlSync';
 import { useUiStore } from '@/store/useUiStore';
@@ -33,11 +36,36 @@ export default function AtlasPage() {
   const { search } = useLocation();
   const isMobile = useIsMobile();
   const reducedMotion = usePrefersReducedMotion();
-  const detailOpen = useMatch('/ereignis/:id') !== null;
+  const eventMatch = useMatch('/ereignis/:id') !== null;
   const [timelineHeight, setTimelineHeight] = useTimelineHeight();
   const atlasView = useUiStore((s) => s.atlasView);
 
   useUrlSync();
+
+  /*
+   * Die Tour führt den Detailbereich mit: Trägt die Etappe ein Ereignis, wird
+   * es geöffnet; trägt sie keines, tritt an dessen Stelle die Etappe selbst.
+   * Ohne den zweiten Fall bliebe das Ereignis der vorigen Etappe stehen.
+   */
+  const activeJourneyId = useAtlasStore((s) => s.activeJourneyId);
+  const tourLeg = useAtlasStore((s) => s.tourLeg);
+  const tourJourney = tourLeg === null ? undefined : getJourney(activeJourneyId ?? undefined);
+  const currentLeg = tourJourney?.legs.find((leg) => leg.order === tourLeg);
+
+  useEffect(() => {
+    if (!currentLeg) return;
+    if (currentLeg.eventId) navigate({ pathname: `/ereignis/${currentLeg.eventId}`, search });
+    else if (eventMatch) navigate({ pathname: '/', search });
+    // `search` bewusst nicht in den Abhängigkeiten: Der Filterzustand ändert
+    // sich beim Weiterschalten nicht, und jede Adressänderung löste sonst
+    // eine zweite Navigation aus.
+  }, [currentLeg]);
+
+  const legPanel = currentLeg && !currentLeg.eventId && tourJourney ? currentLeg : null;
+  const detailOpen = eventMatch || legPanel !== null;
+
+  const detail =
+    legPanel && tourJourney ? <TourLegDetail journey={tourJourney} leg={legPanel} /> : <Outlet />;
 
   // Die eingestellte Ansicht wird mitgenommen: Ohne `search` fiele sie beim
   // Öffnen eines Ereignisses aus der Adresse und käme erst verzögert zurück.
@@ -91,7 +119,7 @@ export default function AtlasPage() {
             aria-label="Detailansicht"
           >
             <div className="h-full overflow-y-auto scrollbar-slim md:w-93">
-              <Outlet />
+              {detail}
             </div>
           </motion.aside>
         ) : null}
@@ -101,7 +129,7 @@ export default function AtlasPage() {
       <AnimatePresence>
         {detailOpen && isMobile ? (
           <BottomSheet key="sheet" label="Detailansicht" onClose={closeDetail}>
-            <Outlet />
+            {detail}
           </BottomSheet>
         ) : null}
       </AnimatePresence>

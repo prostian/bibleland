@@ -32,6 +32,7 @@ export default function useUrlSync(): void {
   const axisMode = useAtlasStore((s) => s.axisMode);
   const readingScope = useAtlasStore((s) => s.readingScope);
   const activeJourneyId = useAtlasStore((s) => s.activeJourneyId);
+  const tourLeg = useAtlasStore((s) => s.tourLeg);
   const linkMapToTimeline = useAtlasStore((s) => s.linkMapToTimeline);
   const bordersMode = useMapStyleStore((s) => s.bordersMode);
   const bordersEraId = useMapStyleStore((s) => s.bordersEraId);
@@ -71,7 +72,11 @@ export default function useUrlSync(): void {
     if (state.readingScope) atlas.setReadingScope(state.readingScope);
     if (state.axisMode) atlas.setAxisMode(state.axisMode);
 
-    if (state.activeJourneyId) atlas.setActiveJourney(state.activeJourneyId);
+    if (state.activeJourneyId) {
+      atlas.setActiveJourney(state.activeJourneyId);
+      // Nach setActiveJourney, das die Tour auf die erste Etappe zurücksetzt.
+      if (state.tourLeg) atlas.setTourLeg(state.tourLeg);
+    }
     if (state.linkMapToTimeline) atlas.setLinkMapToTimeline(true);
 
     // Ein geteilter Link darf die Grenzebene umstellen — dieselbe Wirkung wie
@@ -94,6 +99,7 @@ export default function useUrlSync(): void {
         eventTypes: filters.eventTypes,
         personIds: filters.personIds,
         activeJourneyId,
+        tourLeg,
         years: { from: filters.yearFrom, to: filters.yearTo },
         query: filters.query,
         axisMode,
@@ -115,6 +121,7 @@ export default function useUrlSync(): void {
     axisMode,
     readingScope,
     activeJourneyId,
+    tourLeg,
     linkMapToTimeline,
     bordersMode,
     bordersEraId,

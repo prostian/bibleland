@@ -10,6 +10,8 @@ import { sectionColorVar } from '@/lib/labels';
 interface JourneyRoutesProps {
   journey: Journey;
   onSelectEvent: (eventId: string) => void;
+  /** Bis zu welcher Etappe die Tour gekommen ist; `null` = keine Tour. */
+  progressLeg?: number | null;
 }
 
 /**
@@ -20,7 +22,11 @@ interface JourneyRoutesProps {
  * Hafen, dort ist eine durchgezogene Linie berechtigt; die Wüstenwanderung
  * dagegen ist Rekonstruktion, und das soll man sehen.
  */
-export default function JourneyRoutes({ journey, onSelectEvent }: JourneyRoutesProps) {
+export default function JourneyRoutes({
+  journey,
+  onSelectEvent,
+  progressLeg = null,
+}: JourneyRoutesProps) {
   const legs = useMemo(
     () =>
       [...journey.legs]
@@ -52,12 +58,28 @@ export default function JourneyRoutes({ journey, onSelectEvent }: JourneyRoutesP
         pathOptions={{
           color,
           weight: 3,
-          opacity: 0.95,
+          // Während einer Tour tritt der noch kommende Teil zurück. Ihn ganz
+          // wegzulassen wäre falsch: Wohin es noch geht, gehört zum Bild.
+          opacity: progressLeg === null ? 0.95 : 0.3,
           dashArray: uncertain ? '7 6' : undefined,
           lineCap: 'round',
           lineJoin: 'round',
         }}
       />
+
+      {progressLeg !== null && progressLeg > 1 ? (
+        <Polyline
+          positions={positions.slice(0, Math.min(progressLeg, positions.length))}
+          pathOptions={{
+            color,
+            weight: 4,
+            opacity: 1,
+            dashArray: uncertain ? '7 6' : undefined,
+            lineCap: 'round',
+            lineJoin: 'round',
+          }}
+        />
+      ) : null}
 
       {legs.map(({ leg, place }) => (
         <Marker

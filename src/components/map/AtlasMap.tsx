@@ -13,6 +13,7 @@ import BaseTileLayer, { useTileInversion } from '@/components/map/BaseTileLayer'
 import ClusterLayer, { type PlaceGroup } from '@/components/map/ClusterLayer';
 import HistoricalBorders from '@/components/map/HistoricalBorders';
 import JourneyRoutes from '@/components/map/JourneyRoutes';
+import JourneyTour from '@/components/map/JourneyTour';
 import MapAutoResize from '@/components/map/MapAutoResize';
 import MapBordersControl from '@/components/map/MapBordersControl';
 import MapController from '@/components/map/MapController';
@@ -71,6 +72,7 @@ export default function AtlasMap({ onSelectEvent }: AtlasMapProps) {
   const hoveredEntityId = useAtlasStore((s) => s.hoveredEntityId);
   const hoverEntity = useAtlasStore((s) => s.hoverEntity);
   const activeJourneyId = useAtlasStore((s) => s.activeJourneyId);
+  const tourLeg = useAtlasStore((s) => s.tourLeg);
 
   const invertTiles = useTileInversion();
   const isTouch = useIsTouch();
@@ -181,7 +183,12 @@ export default function AtlasMap({ onSelectEvent }: AtlasMapProps) {
         <MapController />
 
         {activeJourney ? (
-          <JourneyRoutes journey={activeJourney} onSelectEvent={onSelectEvent} />
+          <JourneyRoutes
+            journey={activeJourney}
+            onSelectEvent={onSelectEvent}
+            // Der Lesepfad ist keine Reise, durch die man geführt wird.
+            progressLeg={readingJourney ? null : tourLeg}
+          />
         ) : null}
 
         <ClusterLayer
@@ -200,6 +207,14 @@ export default function AtlasMap({ onSelectEvent }: AtlasMapProps) {
 
       {/* Unten links in einer Spalte: Grenzen über Kartenhintergrund. Die
           Zoomknöpfe sitzen unten rechts, die Legende oben links. */}
+      {/* Die Tourleiste liegt unten mittig über der Karte — am Telefon über
+          der Bereichsleiste, damit sie diese nicht verdeckt. */}
+      {activeJourney && !readingJourney ? (
+        <div className="pointer-events-none absolute inset-x-2 bottom-2 z-1000 mx-auto max-w-lg max-md:bottom-tabbar sm:inset-x-3">
+          <JourneyTour journey={activeJourney} />
+        </div>
+      ) : null}
+
       <div className="pointer-events-none absolute bottom-2 left-2 z-1000 flex w-44 flex-col items-start gap-1.5 sm:bottom-3 sm:left-3 sm:w-52">
         {/*
           Ohne Netz fehlen die Kacheln unbesuchter Gegenden — die Sachdaten

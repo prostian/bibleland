@@ -37,6 +37,8 @@ export interface AtlasUrlState {
   eventTypes: readonly EventType[];
   personIds: readonly string[];
   activeJourneyId: string | null;
+  /** Etappe der gefuehrten Tour, 1-basiert. */
+  tourLeg: number | null;
   years: YearRange;
   query: string;
   axisMode: AxisMode;
@@ -52,6 +54,7 @@ const KEYS = {
   types: 't',
   persons: 'p',
   journey: 'j',
+  tourLeg: 'e',
   years: 'y',
   query: 'q',
   axisMode: 'm',
@@ -82,7 +85,13 @@ export function encodeAtlasState(state: AtlasUrlState): URLSearchParams {
   list(KEYS.types, state.eventTypes);
   list(KEYS.persons, state.personIds);
 
-  if (state.activeJourneyId) params.set(KEYS.journey, state.activeJourneyId);
+  if (state.activeJourneyId) {
+    params.set(KEYS.journey, state.activeJourneyId);
+    // Nur zusammen mit der Reise: Eine Etappe ohne Route hat keinen Bezug.
+    if (state.tourLeg !== null && state.tourLeg > 1) {
+      params.set(KEYS.tourLeg, String(state.tourLeg));
+    }
+  }
 
   if (state.years.from !== MIN_YEAR || state.years.to !== MAX_YEAR) {
     params.set(KEYS.years, `${state.years.from}:${state.years.to}`);
@@ -190,7 +199,13 @@ export function decodeAtlasState(params: URLSearchParams): Partial<AtlasUrlState
   if (personIds) state.personIds = personIds;
 
   const journeyId = params.get(KEYS.journey);
-  if (journeyId && journeyById.has(journeyId)) state.activeJourneyId = journeyId;
+  if (journeyId && journeyById.has(journeyId)) {
+    state.activeJourneyId = journeyId;
+
+    const leg = Number(params.get(KEYS.tourLeg));
+    const legs = journeyById.get(journeyId)?.legs.length ?? 0;
+    if (Number.isInteger(leg) && leg >= 1 && leg <= legs) state.tourLeg = leg;
+  }
 
   const years = readYears(params);
   if (years) state.years = years;

@@ -86,6 +86,19 @@ interface AtlasState {
    */
   showWrittenTrack: boolean;
 
+  /* --- Geführte Tour ------------------------------------------------ */
+
+  /**
+   * Die Etappe, bei der eine Tour gerade steht — 1-basiert wie `JourneyLeg.order`,
+   * `null`, wenn keine läuft.
+   *
+   * Gehört hierher und nicht in die Tourleiste: Karte, Routenlinie und
+   * Detailbereich richten sich danach, und keine der drei kennt die anderen.
+   */
+  tourLeg: number | null;
+  /** Läuft die Tour von selbst weiter? */
+  tourPlaying: boolean;
+
   /* --- Lesemodus --------------------------------------------------- */
 
   axisMode: AxisMode;
@@ -114,6 +127,8 @@ interface AtlasState {
   togglePerson: (personId: string) => void;
   resetFilters: () => void;
   setLinkMapToTimeline: (linked: boolean) => void;
+  setTourLeg: (order: number | null) => void;
+  setTourPlaying: (playing: boolean) => void;
   setShowWrittenTrack: (show: boolean) => void;
   setActiveJourney: (id: string | null) => void;
 }
@@ -131,6 +146,8 @@ export const useAtlasStore = create<AtlasState>((set, get) => ({
   linkMapToTimeline: false,
   activeJourneyId: null,
   showWrittenTrack: false,
+  tourLeg: null,
+  tourPlaying: false,
 
   axisMode: 'zeit',
   readingScope: DEFAULT_READING_SCOPE,
@@ -196,13 +213,20 @@ export const useAtlasStore = create<AtlasState>((set, get) => ({
   togglePerson: (personId) =>
     set((s) => ({ filters: { ...s.filters, personIds: toggle(s.filters.personIds, personId) } })),
 
-  resetFilters: () => set({ filters: DEFAULT_FILTERS, activeJourneyId: null }),
+  resetFilters: () =>
+    set({ filters: DEFAULT_FILTERS, activeJourneyId: null, tourLeg: null, tourPlaying: false }),
 
   setLinkMapToTimeline: (linked) => set({ linkMapToTimeline: linked }),
 
   setShowWrittenTrack: (show) => set({ showWrittenTrack: show }),
 
-  setActiveJourney: (id) => set({ activeJourneyId: id }),
+  setTourLeg: (order) => set({ tourLeg: order }),
+  setTourPlaying: (playing) => set({ tourPlaying: playing }),
+
+  setActiveJourney: (id) =>
+    // Eine gewählte Reise beginnt bei ihrer ersten Etappe — aber angehalten:
+    // Wer eine Route ansehen will, will nicht sofort durch sie gefahren werden.
+    set({ activeJourneyId: id, tourLeg: id ? 1 : null, tourPlaying: false }),
 }));
 
 /** Sind gerade überhaupt Filter gesetzt? Steuert die Anzeige des Zurücksetzen-Knopfs. */
